@@ -14,6 +14,11 @@ class CheckUserRole
             return redirect()->route('login');
         }
         
+        $user = Auth::guard('web')->user();
+        if ($user->role !== 'user') {
+            return redirect()->route('login')->with('error', 'Access denied.');
+        }
+        
         return $next($request);
     }
 }

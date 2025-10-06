@@ -10,8 +10,13 @@ class CheckStaffRole
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::guard('staff')->check()) {
+        if (!Auth::guard('web')->check()) {
             return redirect()->route('login');
+        }
+        
+        $user = Auth::guard('web')->user();
+        if ($user->role !== 'staff') {
+            return redirect()->route('login')->with('error', 'Access denied.');
         }
         
         return $next($request);
