@@ -10,12 +10,13 @@ class CheckHospitalRole
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::guard('hospital')->check()) {
+        if (!Auth::guard('web')->check()) {
             return redirect()->route('login');
         }
         
-        if (Auth::guard('hospital')->user()->status !== 'approved') {
-            return redirect()->route('hospital.pending')->with('error', 'Your account is pending approval');
+        $user = Auth::guard('web')->user();
+        if ($user->role !== 'hospital') {
+            return redirect()->route('login')->with('error', 'Access denied.');
         }
         
         return $next($request);
