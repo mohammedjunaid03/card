@@ -66,6 +66,7 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('otp.verify');
 Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('otp.verify.submit');
+Route::post('/resend-otp', [RegisterController::class, 'resendOtp'])->name('otp.resend');
 
 // Password Reset
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
