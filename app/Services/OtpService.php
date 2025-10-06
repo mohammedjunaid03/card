@@ -10,8 +10,8 @@ class OtpService
 {
     public function generate($identifier, $type = 'registration')
     {
-        // Generate random OTP
-        $otp = Str::random(6);
+        // Generate random 6-digit numeric OTP
+        $otp = rand(100000, 999999);
         
         // Delete old OTPs for this identifier
         Otp::where('identifier', $identifier)
