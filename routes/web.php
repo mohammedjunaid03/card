@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\StatsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -56,6 +57,9 @@ Route::get('/hospital-network', [HomeController::class, 'hospitalNetwork'])->nam
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact.submit');
+
+// API Routes for public stats
+Route::get('/api/stats', [StatsController::class, 'index']);
 
 // Auth
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

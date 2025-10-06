@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use App\Models\AuditLog;
-use Illuminate\Support\Facades\Auth;
 
 class AuditLogMiddleware
 {
@@ -14,68 +14,106 @@ class AuditLogMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        // 1. Process the request first
         $response = $next($request);
-        
-        // 2. Log important write actions (POST, PUT, PATCH, DELETE) only if the response was successful (2xx status).
-        if (in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE']) && $response->isSuccessful()) {
-            $this->logAction($request);
+
+        // Log the request if user is authenticated
+        if (auth()->check() || auth('hospital')->check() || auth('staff')->check() || auth('admin')->check()) {
+            $this->logRequest($request, $response);
         }
-        
+
         return $response;
     }
-    
+
     /**
-     * Log the action details.
+     * Log the request details
      */
-    private function logAction($request)
+    private function logRequest(Request $request, Response $response): void
     {
-        $user = $this->getAuthenticatedUser();
-        
-        // Exclude sensitive fields and internal Laravel tokens from the payload
-        $newValues = $request->except([
-            '_token', 
-            '_method', 
-            'password', 
-            'password_confirmation', 
-            'current_password'
-        ]);
-        
-        if ($user) {
-            AuditLog::create([
-                // Use model name (e.g., 'User') for polymorphic relationship
-                'user_type' => $user['type'], 
-                'user_id' => $user['id'],
-                // Log the action path or route name
-                'action' => $request->route() ? $request->route()->getName() : $request->path(),
-                // Log the request method as a model identifier for generic updates
-                'model_type' => $request->method(), 
-                // Log the request payload as the 'new_values'
-                'new_values' => $newValues, 
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
+        try {
+            $user = null;
+            $userType = null;
+            $userId = null;
+
+            // Determine which guard is being used
+            if (auth()->check()) {
+                $user = auth()->user();
+                $userType = 'user';
+                $userId = $user->id;
+            } elseif (auth('hospital')->check()) {
+                $user = auth('hospital')->user();
+                $userType = 'hospital';
+                $userId = $user->id;
+            } elseif (auth('staff')->check()) {
+                $user = auth('staff')->user();
+                $userType = 'staff';
+                $userId = $user->id;
+            } elseif (auth('admin')->check()) {
+                $user = auth('admin')->user();
+                $userType = 'admin';
+                $userId = $user->id;
+            }
+
+            if ($user) {
+                AuditLog::create([
+                    'user_id' => $userId,
+                    'user_type' => $userType,
+                    'action' => $request->method() . ' ' . $request->route()->getName(),
+                    'description' => $this->getActionDescription($request),
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'request_data' => $this->getRequestData($request),
+                    'response_status' => $response->getStatusCode(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't break the request
+            \Log::error('Audit log error: ' . $e->getMessage());
         }
     }
-    
+
     /**
-     * Get the currently authenticated user details across all guards.
+     * Get action description based on route
      */
-    private function getAuthenticatedUser()
+    private function getActionDescription(Request $request): string
     {
-        // The 'type' must be the fully qualified class name or the model name (conventionally capitalized)
-        if (Auth::guard('web')->check()) {
-            return ['type' => 'User', 'id' => Auth::guard('web')->id()];
-        } elseif (Auth::guard('hospital')->check()) {
-            return ['type' => 'Hospital', 'id' => Auth::guard('hospital')->id()];
-        } elseif (Auth::guard('staff')->check()) {
-            return ['type' => 'Staff', 'id' => Auth::guard('staff')->id()];
-        } elseif (Auth::guard('admin')->check()) {
-            return ['type' => 'Admin', 'id' => Auth::guard('admin')->id()];
-        }
+        $routeName = $request->route()->getName();
         
-        return null;
+        $descriptions = [
+            'user.dashboard' => 'Accessed user dashboard',
+            'user.profile' => 'Viewed profile',
+            'user.profile.update' => 'Updated profile',
+            'user.health-card' => 'Viewed health card',
+            'user.health-card.download' => 'Downloaded health card',
+            'hospital.dashboard' => 'Accessed hospital dashboard',
+            'hospital.verify-card' => 'Verified health card',
+            'admin.dashboard' => 'Accessed admin dashboard',
+            'admin.users.index' => 'Viewed users list',
+            'admin.hospitals.index' => 'Viewed hospitals list',
+        ];
+
+        return $descriptions[$routeName] ?? 'Performed action: ' . $routeName;
+    }
+
+    /**
+     * Get sanitized request data
+     */
+    private function getRequestData(Request $request): ?array
+    {
+        $data = $request->all();
+        
+        // Remove sensitive data
+        $sensitiveFields = ['password', 'password_confirmation', 'current_password', 'new_password'];
+        foreach ($sensitiveFields as $field) {
+            unset($data[$field]);
+        }
+
+        // Limit data size
+        if (strlen(json_encode($data)) > 1000) {
+            return ['data_size' => 'large', 'truncated' => true];
+        }
+
+        return $data;
     }
 }
