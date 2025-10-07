@@ -20,6 +20,7 @@ class Staff extends Authenticatable
         'password',
         'role',
         'status',
+        'hospital_id',
         'email_verified_at',
     ];
 
@@ -32,6 +33,12 @@ class Staff extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    // Relationships
+    public function hospital()
+    {
+        return $this->belongsTo(Hospital::class);
     }
 
     // Helper Methods

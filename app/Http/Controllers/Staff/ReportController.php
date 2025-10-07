@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Hospital;
+namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\PatientAvailment;
@@ -10,32 +10,34 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $hospital = auth()->guard('hospital')->user();
-        $services = $hospital->services;
+        $staff = auth()->guard('staff')->user();
+        
+        // Get all availments for staff reports
+        $query = PatientAvailment::with(['user', 'hospital', 'service']);
 
-        $query = PatientAvailment::where('hospital_id', $hospital->id)->with(['user', 'service']);
-
-        if ($request->has('from_date')) {
+        if ($request->filled('from_date')) {
             $query->whereDate('availment_date', '>=', $request->from_date);
         }
 
-        if ($request->has('to_date')) {
+        if ($request->filled('to_date')) {
             $query->whereDate('availment_date', '<=', $request->to_date);
         }
 
-        if ($request->has('service_id')) {
-            $query->where('service_id', $request->service_id);
+        if ($request->filled('hospital_id')) {
+            $query->where('hospital_id', $request->hospital_id);
         }
 
-        $availments = $query->get();
+        $availments = $query->orderBy('created_at', 'desc')->paginate(20);
 
         $summary = [
-            'total_patients' => $availments->unique('user_id')->count(),
-            'total_availments' => $availments->count(),
-            'total_revenue' => $availments->sum('final_amount'),
-            'total_discount' => $availments->sum('discount_amount'),
+            'total_patients' => PatientAvailment::distinct('user_id')->count(),
+            'total_availments' => PatientAvailment::count(),
+            'total_discount' => PatientAvailment::sum('discount_amount'),
+            'total_hospitals' => \App\Models\Hospital::where('status', 'approved')->count(),
         ];
 
-        return view('hospital.reports', compact('availments', 'summary', 'services'));
+        $hospitals = \App\Models\Hospital::where('status', 'approved')->orderBy('name')->get();
+
+        return view('staff.reports', compact('availments', 'summary', 'hospitals'));
     }
 }

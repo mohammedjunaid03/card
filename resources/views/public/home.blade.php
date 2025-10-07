@@ -195,9 +195,16 @@
     // Animated counters
     function animateCounter(id, start, end, duration) {
         let obj = document.getElementById(id);
-        let range = end - start;
+        let range = Math.abs(end - start);
+        
+        // If range is 0, just set the value immediately
+        if (range === 0) {
+            obj.textContent = end.toLocaleString();
+            return;
+        }
+        
         let increment = end > start ? 1 : -1;
-        let stepTime = Math.abs(Math.floor(duration / range));
+        let stepTime = Math.max(1, Math.floor(duration / range)); // Ensure minimum step time
         let current = start;
         
         let timer = setInterval(function() {
@@ -211,19 +218,31 @@
     
     // Fetch and animate stats
     fetch('/api/stats')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
-            animateCounter('users-count', 0, data.users || 1250, 2000);
-            animateCounter('hospitals-count', 0, data.hospitals || 500, 2000);
-            animateCounter('cards-count', 0, data.cards || 1200, 2000);
-            animateCounter('savings-count', 0, data.savings || 5000000, 2000);
+            // Ensure all values are positive numbers
+            const users = Math.max(0, parseInt(data.users) || 0);
+            const hospitals = Math.max(0, parseInt(data.hospitals) || 0);
+            const cards = Math.max(0, parseInt(data.cards) || 0);
+            const savings = Math.max(0, parseInt(data.savings) || 0);
+            
+            animateCounter('users-count', 0, users, 2000);
+            animateCounter('hospitals-count', 0, hospitals, 2000);
+            animateCounter('cards-count', 0, cards, 2000);
+            animateCounter('savings-count', 0, savings, 2000);
         })
         .catch(error => {
-            // Fallback values
-            animateCounter('users-count', 0, 1250, 2000);
-            animateCounter('hospitals-count', 0, 500, 2000);
-            animateCounter('cards-count', 0, 1200, 2000);
-            animateCounter('savings-count', 0, 5000000, 2000);
+            console.error('Error fetching stats:', error);
+            // Fallback to 0 values if API fails
+            animateCounter('users-count', 0, 0, 2000);
+            animateCounter('hospitals-count', 0, 0, 2000);
+            animateCounter('cards-count', 0, 0, 2000);
+            animateCounter('savings-count', 0, 0, 2000);
         });
 </script>
 @endpush

@@ -1,7 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">
-            <i class="fas fa-heartbeat"></i> Health Card System
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
+            <!-- LOGO PLACEHOLDER - Replace kcc-logo.svg with your logo file -->
+            <img src="{{ asset('logo.png') }}" alt="KCC HealthCard" height="30" class="me-2" id="navbar-logo">
+            <span class="brand-text"> HealthCard</span>
         </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -27,9 +29,6 @@
                 </li>
                 
                 @guest
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Login</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-light text-primary ms-2" href="{{ route('register') }}">
                             Get Health Card

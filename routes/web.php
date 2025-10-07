@@ -20,9 +20,9 @@ use App\Http\Controllers\Hospital\DashboardController as HospitalDashboard;
 use App\Http\Controllers\Hospital\ProfileController as HospitalProfile;
 use App\Http\Controllers\Hospital\ServiceController;
 use App\Http\Controllers\Hospital\CardVerificationController;
-use App\Http\Controllers\Hospital\AvailmentController;
+use App\Http\Controllers\Hospital\PatientAvailmentController;
 use App\Http\Controllers\Hospital\PatientController;
-use App\Http\Controllers\Hospital\ReportController as HospitalReport;
+use App\Http\Controllers\Hospital\HospitalReport;
 use App\Http\Controllers\Hospital\AnalyticsController;
 
 use App\Http\Controllers\Staff\DashboardController as StaffDashboard;
@@ -32,13 +32,13 @@ use App\Http\Controllers\Staff\DocumentVerificationController;
 use App\Http\Controllers\Staff\ReportController as StaffReport;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
-use App\Http\Controllers\Admin\UserManagementController as AdminUserManagement;
-use App\Http\Controllers\Admin\HospitalManagementController as AdminHospitalManagement;
+use App\Http\Controllers\Admin\AdminUserManagement;
+use App\Http\Controllers\Admin\AdminHospitalManagement;
 use App\Http\Controllers\Admin\StaffManagementController;
 use App\Http\Controllers\Admin\CardApprovalController;
-use App\Http\Controllers\Admin\AnalyticsController as AdminAnalytics;
-use App\Http\Controllers\Admin\ReportController as AdminReport;
-use App\Http\Controllers\Admin\NotificationController as AdminNotification;
+use App\Http\Controllers\Admin\AdminAnalytics;
+use App\Http\Controllers\Admin\AdminReport;
+use App\Http\Controllers\Admin\AdminNotification;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ServiceManagementController;
@@ -57,6 +57,15 @@ Route::get('/hospital-network', [HomeController::class, 'hospitalNetwork'])->nam
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact.submit');
+
+// Partner Pages
+Route::get('/register-hospital', [HomeController::class, 'registerHospital'])->name('register-hospital');
+Route::get('/partner-benefits', [HomeController::class, 'partnerBenefits'])->name('partner-benefits');
+Route::get('/terms-conditions', [HomeController::class, 'termsConditions'])->name('terms-conditions');
+Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
+
+// Hospital Details
+Route::get('/hospital/{id}', [HomeController::class, 'hospitalDetails'])->name('hospital.details');
 
 // API Routes for public stats
 Route::get('/api/stats', [StatsController::class, 'index']);
@@ -82,7 +91,7 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name(
 | User Module Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:web', 'user', 'audit_log'])->prefix('user')->name('user.')->group(function () {
+Route::middleware(['auth:web', 'audit_log'])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
     Route::get('/profile', [UserProfile::class, 'show'])->name('profile');
     Route::put('/profile', [UserProfile::class, 'update'])->name('profile.update');
@@ -106,7 +115,7 @@ Route::middleware(['auth:web', 'user', 'audit_log'])->prefix('user')->name('user
 | Hospital Module Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:hospital', 'hospital', 'audit_log'])->prefix('hospital')->name('hospital.')->group(function () {
+Route::middleware(['auth:hospital', 'audit_log'])->prefix('hospital')->name('hospital.')->group(function () {
     Route::get('/dashboard', [HospitalDashboard::class, 'index'])->name('dashboard');
     Route::get('/profile', [HospitalProfile::class, 'show'])->name('profile');
     Route::put('/profile', [HospitalProfile::class, 'update'])->name('profile.update');
@@ -116,7 +125,10 @@ Route::middleware(['auth:hospital', 'hospital', 'audit_log'])->prefix('hospital'
     Route::get('/verify-card', [CardVerificationController::class, 'showVerificationForm'])->name('verify-card');
     Route::post('/verify-card', [CardVerificationController::class, 'verify'])->name('verify-card.submit');
 
-    Route::resource('availments', AvailmentController::class)->except(['edit', 'update', 'destroy']);
+    Route::get('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
+    Route::post('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
+    Route::post('/patient-availments/record', [PatientAvailmentController::class, 'recordAvailment'])->name('patient-availments.record');
+    Route::resource('availments', PatientAvailmentController::class)->except(['edit', 'update', 'destroy']);
     Route::get('/patients', [PatientController::class, 'index'])->name('patients');
     Route::get('/patients/{id}', [PatientController::class, 'show'])->name('patients.show');
 
@@ -129,11 +141,13 @@ Route::middleware(['auth:hospital', 'hospital', 'audit_log'])->prefix('hospital'
 | Staff Module Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:staff', 'staff', 'audit_log'])->prefix('staff')->name('staff.')->group(function () {
+Route::middleware(['auth:staff', 'audit_log'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffDashboard::class, 'index'])->name('dashboard');
 
+    Route::get('/users', [StaffUserManagement::class, 'index'])->name('users.index');
     Route::get('/users/create', [StaffUserManagement::class, 'create'])->name('users.create');
     Route::post('/users', [StaffUserManagement::class, 'store'])->name('users.store');
+    Route::post('/users/{user}/generate-card', [StaffUserManagement::class, 'generateHealthCard'])->name('users.generate-card');
 
     Route::get('/hospitals/create', [StaffHospitalManagement::class, 'create'])->name('hospitals.create');
     Route::post('/hospitals', [StaffHospitalManagement::class, 'store'])->name('hospitals.store');
@@ -142,6 +156,10 @@ Route::middleware(['auth:staff', 'staff', 'audit_log'])->prefix('staff')->name('
     Route::post('/verify-documents/{id}', [DocumentVerificationController::class, 'verify'])->name('verify-documents.verify');
 
     Route::get('/reports', [StaffReport::class, 'index'])->name('reports');
+    
+    // Health Card Routes
+    Route::get('/health-card/{user}/download', [StaffUserManagement::class, 'downloadHealthCard'])->name('health-card.download');
+    Route::get('/health-card/{user}/print', [StaffUserManagement::class, 'printHealthCard'])->name('health-card.print');
 });
 
 /*
@@ -149,18 +167,33 @@ Route::middleware(['auth:staff', 'staff', 'audit_log'])->prefix('staff')->name('
 | Admin Module Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:admin', 'admin', 'audit_log'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth:admin', 'audit_log'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
     Route::resource('users', AdminUserManagement::class);
-    Route::resource('hospitals', AdminHospitalManagement::class);
-    Route::put('/hospitals/{id}/approve', [AdminHospitalManagement::class, 'approve'])->name('hospitals.approve');
-    Route::put('/hospitals/{id}/reject', [AdminHospitalManagement::class, 'reject'])->name('hospitals.reject');
+    Route::put('/users/{id}/status', [AdminUserManagement::class, 'updateStatus'])->name('users.status');
+    Route::post('/users/{id}/issue-card', [AdminUserManagement::class, 'issueHealthCard'])->name('users.issue-card');
+    Route::post('/users/bulk-issue-cards', [AdminUserManagement::class, 'bulkIssueHealthCards'])->name('users.bulk-issue-cards');
+    Route::post('/users/bulk-status', [AdminUserManagement::class, 'bulkUpdateStatus'])->name('users.bulk-status');
+            Route::resource('hospitals', AdminHospitalManagement::class);
+            Route::put('/hospitals/{id}/approve', [AdminHospitalManagement::class, 'approve'])->name('hospitals.approve');
+            Route::put('/hospitals/{id}/reject', [AdminHospitalManagement::class, 'reject'])->name('hospitals.reject');
+            
+            // Contract Management Routes
+            Route::get('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'showContract'])->name('hospitals.contract');
+            Route::post('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'storeContract'])->name('hospitals.contract.store');
+            Route::put('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'updateContract'])->name('hospitals.contract.update');
+            Route::post('/hospitals/{id}/contract/renew', [AdminHospitalManagement::class, 'renewContract'])->name('hospitals.contract.renew');
+            Route::post('/hospitals/{id}/contract/terminate', [AdminHospitalManagement::class, 'terminateContract'])->name('hospitals.contract.terminate');
 
     Route::resource('staff', StaffManagementController::class);
+    Route::put('/staff/{id}/status', [StaffManagementController::class, 'updateStatus'])->name('staff.status');
+    Route::post('/staff/bulk-status', [StaffManagementController::class, 'bulkUpdateStatus'])->name('staff.bulk-status');
 
     Route::get('/card-approvals', [CardApprovalController::class, 'index'])->name('card-approvals');
     Route::post('/card-approvals/{id}/approve', [CardApprovalController::class, 'approve'])->name('card-approvals.approve');
+    Route::post('/card-approvals/approve-all', [CardApprovalController::class, 'approveAll'])->name('card-approvals.approve-all');
+    Route::put('/card-approvals/{id}/reject', [CardApprovalController::class, 'reject'])->name('card-approvals.reject');
 
     Route::get('/analytics', [AdminAnalytics::class, 'index'])->name('analytics');
 
@@ -168,9 +201,15 @@ Route::middleware(['auth:admin', 'admin', 'audit_log'])->prefix('admin')->name('
     Route::get('/reports/export', [AdminReport::class, 'export'])->name('reports.export');
 
     Route::get('/notifications', [AdminNotification::class, 'index'])->name('notifications');
+    Route::post('/notifications/send', [AdminNotification::class, 'send'])->name('notifications.send');
+    Route::post('/notifications/{id}/mark-read', [AdminNotification::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [AdminNotification::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [AdminNotification::class, 'destroy'])->name('notifications.destroy');
     Route::post('/notifications', [AdminNotification::class, 'send'])->name('notifications.send');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs');
+    Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
+    Route::post('/audit-logs/clear', [AuditLogController::class, 'clear'])->name('audit-logs.clear');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');

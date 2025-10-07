@@ -3,70 +3,136 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\CardGeneratorService;
-use App\Services\EncryptionService;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use App\Services\CardGeneratorService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserManagementController extends Controller
 {
-    protected $cardGeneratorService;
-    protected $encryptionService;
-
-    public function __construct(CardGeneratorService $cardGeneratorService, EncryptionService $encryptionService)
+    public function index()
     {
-        $this->cardGeneratorService = $cardGeneratorService;
-        $this->encryptionService = $encryptionService;
+        $users = User::with('healthCard')->orderBy('created_at', 'desc')->paginate(20);
+        return view('staff.users.index', compact('users'));
     }
 
     public function create()
     {
-        return view('staff.register-user');
+        return view('staff.users.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'date_of_birth' => 'required|date|before:today',
-            'age' => 'required|integer|min:1|max:150',
-            'gender' => 'required|in:Male,Female,Other',
+            'email' => 'required|email|unique:users',
+            'mobile' => 'required|string|unique:users',
+            'date_of_birth' => 'required|date',
+            'gender' => 'required|in:male,female,other',
             'address' => 'required|string',
-            'blood_group' => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'email' => 'required|email|unique:users,email',
-            'mobile' => 'required|digits:10|unique:users,mobile',
-            'password' => 'required|string|min:8|confirmed',
-            'aadhaar' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
+            'blood_group' => 'required|string',
+            'password' => 'required|string|min:8',
+            'aadhaar_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
-
-        // Encrypt Aadhaar
-        $tempAadhaarPath = $request->file('aadhaar')->store('aadhaar_temp', 'private');
-        $aadhaarPath = $this->encryptionService->encryptAndStoreFile($tempAadhaarPath, 'private');
-
-        $photoPath = $request->hasFile('photo') ? $request->file('photo')->store('photos', 'public') : null;
 
         $user = User::create([
             'name' => $request->name,
+            'email' => $request->email,
+            'mobile' => $request->mobile,
             'date_of_birth' => $request->date_of_birth,
-            'age' => $request->age,
+            'age' => \Carbon\Carbon::parse($request->date_of_birth)->age,
             'gender' => $request->gender,
             'address' => $request->address,
             'blood_group' => $request->blood_group,
-            'email' => $request->email,
-            'mobile' => $request->mobile,
-            'password' => $request->password,
-            'aadhaar_path' => $aadhaarPath,
-            'photo_path' => $photoPath,
-            'email_verified' => true,
-            'mobile_verified' => true,
+            'password' => Hash::make($request->password),
             'status' => 'active',
+            'email_verified_at' => now(),
+            'registered_by' => auth()->id(),
+            'registration_type' => 'staff'
         ]);
 
-        // Generate Health Card
-        $this->cardGeneratorService->generateCard($user);
+        // Handle Aadhaar file upload
+        if ($request->hasFile('aadhaar_file')) {
+            $file = $request->file('aadhaar_file');
+            $filename = 'aadhaar_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('aadhaar', $filename, 'private');
+            $user->update(['aadhaar_file' => $path]);
+        }
 
-        return redirect()->route('staff.dashboard')
-                        ->with('success', 'User registered successfully! Health card generated.');
+        // Automatically generate health card
+        try {
+            $cardGenerator = new CardGeneratorService();
+            $healthCard = $cardGenerator->generateCard($user);
+            
+            return redirect()->route('staff.dashboard')
+                ->with('success', 'User registered successfully and health card generated!');
+        } catch (\Exception $e) {
+            // If card generation fails, still redirect with success but log the error
+            \Log::error('Health card generation failed for user ' . $user->id . ': ' . $e->getMessage());
+            
+            return redirect()->route('staff.dashboard')
+                ->with('success', 'User registered successfully. Health card generation failed - please generate manually.');
+        }
+    }
+
+    /**
+     * Download health card PDF for a user
+     */
+    public function downloadHealthCard(User $user)
+    {
+        $healthCard = $user->healthCard;
+        
+        if (!$healthCard) {
+            return redirect()->back()->with('error', 'Health card not found for this user.');
+        }
+
+        if (!$healthCard->pdf_path || !file_exists(storage_path('app/public/' . $healthCard->pdf_path))) {
+            return redirect()->back()->with('error', 'Health card PDF not found. Please regenerate the card.');
+        }
+
+        return response()->download(storage_path('app/public/' . $healthCard->pdf_path), 
+            'health-card-' . $user->name . '.pdf');
+    }
+
+    /**
+     * Print health card PDF for a user
+     */
+    public function printHealthCard(User $user)
+    {
+        $healthCard = $user->healthCard;
+        
+        if (!$healthCard) {
+            return redirect()->back()->with('error', 'Health card not found for this user.');
+        }
+
+        if (!$healthCard->pdf_path || !file_exists(storage_path('app/public/' . $healthCard->pdf_path))) {
+            return redirect()->back()->with('error', 'Health card PDF not found. Please regenerate the card.');
+        }
+
+        return response()->file(storage_path('app/public/' . $healthCard->pdf_path));
+    }
+
+    /**
+     * Manually generate health card for a user
+     */
+    public function generateHealthCard(User $user)
+    {
+        // Check if user already has a health card
+        if ($user->healthCard) {
+            return redirect()->back()->with('error', 'Health card already exists for this user.');
+        }
+
+        try {
+            $cardGenerator = new CardGeneratorService();
+            $healthCard = $cardGenerator->generateCard($user);
+            
+            return redirect()->back()->with('success', 'Health card generated successfully!');
+        } catch (\Exception $e) {
+            \Log::error('Manual health card generation failed for user ' . $user->id . ': ' . $e->getMessage());
+            
+            return redirect()->back()->with('error', 'Failed to generate health card. Please try again.');
+        }
     }
 }

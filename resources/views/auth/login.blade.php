@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Health Card System</title>
+    <title>Login - KCC HealthCard</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .login-container {
             max-width: 400px;
@@ -23,6 +25,11 @@
 </head>
 <body>
     <div class="login-container">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="{{ route('home') }}" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
         <h2>System Login</h2>
         
         @if ($errors->any())
@@ -42,9 +49,9 @@
                 <label for="user_type">Select Your Role</label>
                 <select id="user_type" name="user_type" required>
                     <option value="">-- Select --</option>
-                    <option value="user" {{ old('user_type') == 'user' ? 'selected' : '' }}>Patient/User</option>
+                    <option value="user" {{ (old('user_type') == 'user' || request('role') == 'user' || (!request('role') && !old('user_type'))) ? 'selected' : '' }}>Patient/User</option>
                     <option value="hospital" {{ old('user_type') == 'hospital' ? 'selected' : '' }}>Hospital Staff</option>
-                    <option value="staff" {{ old('user_type') == 'staff' ? 'selected' : '' }}>System Staff</option>
+                    <option value="staff" {{ (old('user_type') == 'staff' || request('role') == 'staff') ? 'selected' : '' }}>System Staff</option>
                     <option value="admin" {{ old('user_type') == 'admin' ? 'selected' : '' }}>System Admin</option>
                 </select>
                 @error('user_type')
@@ -79,6 +86,7 @@
             
             <div style="text-align: center; margin-top: 15px;">
                 <p>New User? <a href="{{ route('register') }}">Register for Health Card</a></p>
+                <p><a href="{{ route('login', ['role' => 'staff']) }}">Staff Login</a></p>
             </div>
         </form>
     </div>

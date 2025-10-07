@@ -39,8 +39,11 @@
     
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Hospitals ({{ $hospitals->total() }})</h5>
+                <a href="{{ route('admin.hospitals.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Hospital
+                </a>
             </div>
             <div class="card-body">
                 @if($hospitals->count() > 0)
@@ -98,6 +101,9 @@
                                         <td>{{ $hospital->created_at->format('d M Y') }}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
+                                                <a href="{{ route('admin.hospitals.edit', $hospital->id) }}" class="btn btn-info" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
                                                 <button type="button" class="btn btn-primary" 
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#viewModal{{ $hospital->id }}">

@@ -145,6 +145,7 @@
                         
                         <div class="text-center mt-3">
                             <p>Already have an account? <a href="{{ route('login') }}">Login here</a></p>
+                            <p><a href="{{ route('login', ['role' => 'staff']) }}">Staff Login</a></p>
                         </div>
                     </form>
                 </div>

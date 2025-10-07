@@ -1,11 +1,11 @@
 <div class="dashboard-header">
-    <div>
-        <button type="button" id="sidebarCollapse" class="btn btn-primary">
+    <div class="d-flex align-items-center">
+        <button type="button" id="sidebarToggle" class="btn btn-outline-secondary me-3">
             <i class="fas fa-bars"></i>
         </button>
-        <span class="ms-3 fs-5">
+        <h4 class="mb-0">
             @yield('title', 'Dashboard')
-        </span>
+        </h4>
     </div>
     
     <div class="d-flex align-items-center">
@@ -58,8 +58,37 @@
 
 @push('scripts')
 <script>
-    $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active');
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    
+    // Check if sidebar state is stored in localStorage
+    const sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
+    
+    if (sidebarHidden) {
+        sidebar.classList.add('hidden');
+        content.classList.add('full-width');
+        sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+    
+    sidebarToggle.addEventListener('click', function() {
+        const isHidden = sidebar.classList.contains('hidden');
+        
+        if (isHidden) {
+            // Show sidebar
+            sidebar.classList.remove('hidden');
+            content.classList.remove('full-width');
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            localStorage.setItem('sidebarHidden', 'false');
+        } else {
+            // Hide sidebar
+            sidebar.classList.add('hidden');
+            content.classList.add('full-width');
+            sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            localStorage.setItem('sidebarHidden', 'true');
+        }
     });
+});
 </script>
 @endpush

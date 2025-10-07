@@ -143,12 +143,13 @@ The Health Card Management System is a full-stack web application that digitizes
 
 After running the seeders, you can use these default credentials:
 
-### Admin
-- **Email:** admin@healthcardsystem.com
+### Admin (Single Admin System)
+- **Email:** admin@gmail.com
 - **Password:** admin123
+- **Role:** Super Admin (manages all system functions)
 
 ### Staff
-- **Email:** john.smith@healthcardsystem.com
+- **Email:** john.smith@gmail.com
 - **Password:** staff123
 
 ### Hospital
@@ -156,7 +157,7 @@ After running the seeders, you can use these default credentials:
 - **Password:** apollo123
 
 ### Test User
-- **Email:** test@example.com
+- **Email:** test@gmail.com
 - **Password:** password
 
 ## 📁 Project Structure

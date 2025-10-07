@@ -302,18 +302,22 @@ $(document).ready(function() {
         $('body').addClass('dark-theme');
     }
     
-    // Initialize date pickers
-    $('.datepicker').datepicker({
-        format: 'dd-mm-yyyy',
-        autoclose: true,
-        todayHighlight: true
-    });
+    // Initialize date pickers (if datepicker library is loaded)
+    if (typeof $.fn.datepicker !== 'undefined') {
+        $('.datepicker').datepicker({
+            format: 'dd-mm-yyyy',
+            autoclose: true,
+            todayHighlight: true
+        });
+    }
     
-    // Initialize time pickers
-    $('.timepicker').timepicker({
-        showMeridian: false,
-        minuteStep: 15
-    });
+    // Initialize time pickers (if timepicker library is loaded)
+    if (typeof $.fn.timepicker !== 'undefined') {
+        $('.timepicker').timepicker({
+            showMeridian: false,
+            minuteStep: 15
+        });
+    }
     
     // Form wizard functionality
     $('.form-wizard .next-btn').on('click', function() {

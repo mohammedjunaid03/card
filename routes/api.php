@@ -30,6 +30,7 @@ Route::prefix('v1')->group(function () {
         ->name('api.healthcard.download')
         ->middleware('signed');
 
+
     // ---------------------------
     // Protected Routes (Authenticated)
     // ---------------------------
@@ -57,8 +58,5 @@ Route::prefix('v1')->group(function () {
 
         // --- Analytics ---
         Route::get('/analytics', [AnalyticsController::class, 'userStats']);
-
-        // --- Public Stats (even authenticated users can access) ---
-        Route::get('/stats', [HomeController::class, 'getStats']);
     });
 });

@@ -13,38 +13,18 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $admins = [
+        // Create only one admin user
+        Admin::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
             [
-                'name' => 'Super Admin',
-                'email' => 'superadmin@gmail.com',
+                'name' => 'System Administrator',
+                'email' => 'admin@gmail.com',
                 'mobile' => '9876543210',
-                'password' => 'admin123',
+                'password' => 'admin123', // Plain text, will be hashed by model mutator
                 'role' => 'super_admin',
                 'status' => 'active',
                 'email_verified_at' => now(),
-            ],
-            [
-                'name' => 'System Administrator',
-                'email' => 'systemadmin@gmail.com',
-                'mobile' => '9876543211',
-                'password' => 'system123',
-                'role' => 'admin',
-                'status' => 'active',
-                'email_verified_at' => now(),
-            ],
-            [
-                'name' => 'Support Admin',
-                'email' => 'supportadmin@gmail.com',
-                'mobile' => '9876543212',
-                'password' => 'support123',
-                'role' => 'support_admin',
-                'status' => 'active',
-                'email_verified_at' => now(),
-            ],
-        ];
-
-        foreach ($admins as $admin) {
-            Admin::create($admin);
-        }
+            ]
+        );
     }
 }

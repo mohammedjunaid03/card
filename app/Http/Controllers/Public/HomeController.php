@@ -8,6 +8,7 @@ use App\Models\Hospital;
 use App\Models\HealthCard;
 use App\Models\PatientAvailment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HomeController extends Controller
 {
@@ -26,13 +27,43 @@ class HomeController extends Controller
         return view('public.how-it-works');
     }
     
-    public function hospitalNetwork()
+    public function hospitalNetwork(Request $request)
     {
-        $hospitals = Hospital::where('status', 'approved')
-                             ->with('services')
-                             ->paginate(12);
+        $query = Hospital::where('status', 'approved')
+                         ->with('ownedServices');
+
+        // Filter by city
+        if ($request->filled('city')) {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+
+        // Filter by service
+        if ($request->filled('service')) {
+            $query->whereHas('ownedServices', function ($q) use ($request) {
+                $q->where('category', 'like', '%' . $request->service . '%');
+            });
+        }
+
+        // Filter by minimum discount
+        if ($request->filled('discount')) {
+            $query->whereHas('ownedServices', function ($q) use ($request) {
+                $q->where('discount_percentage', '>=', $request->discount);
+            });
+        }
+
+        $hospitals = $query->orderBy('name')->paginate(12);
         
-        return view('public.hospital-network', compact('hospitals'));
+        // Get all services for filter dropdown
+        $services = \App\Models\Service::distinct('category')->pluck('category');
+        
+        // Get all cities for filter dropdown
+        $cities = Hospital::where('status', 'approved')
+                          ->distinct('city')
+                          ->pluck('city')
+                          ->filter()
+                          ->sort();
+        
+        return view('public.hospital-network', compact('hospitals', 'services', 'cities'));
     }
     
     public function faqs()
@@ -82,18 +113,58 @@ class HomeController extends Controller
         ]);
         
         // Send email to admin
-        \Mail::to('admin@healthcard.com')->send(new \App\Mail\ContactForm($request->all()));
-        
-        return back()->with('success', 'Thank you for contacting us! We will get back to you soon.');
+        try {
+            Mail::to('admin@kcchealthcard.com')->send(new \App\Mail\ContactForm($request->all()));
+            return back()->with('success', 'Thank you for contacting us! We will get back to you soon.');
+        } catch (\Exception $e) {
+            \Log::error('Contact form email failed: ' . $e->getMessage());
+            return back()->with('success', 'Thank you for contacting us! We will get back to you soon.');
+        }
     }
     
     public function getStats()
     {
+        // Get real statistics from database
+        $users = User::count();
+        $hospitals = Hospital::where('status', 'approved')->count();
+        $cards = HealthCard::count();
+        $savings = PatientAvailment::sum('discount_amount') ?? 0;
+        
+        // Ensure all values are positive integers
         return response()->json([
-            'users' => User::count(),
-            'hospitals' => Hospital::where('status', 'approved')->count(),
-            'cards' => HealthCard::count(),
-            'savings' => PatientAvailment::sum('discount_amount'),
+            'users' => max(0, (int) $users),
+            'hospitals' => max(0, (int) $hospitals),
+            'cards' => max(0, (int) $cards),
+            'savings' => max(0, (int) $savings),
         ]);
+    }
+    
+    public function registerHospital()
+    {
+        return view('public.register-hospital');
+    }
+    
+    public function partnerBenefits()
+    {
+        return view('public.partner-benefits');
+    }
+    
+    public function termsConditions()
+    {
+        return view('public.terms-conditions');
+    }
+    
+    public function privacyPolicy()
+    {
+        return view('public.privacy-policy');
+    }
+    
+    public function hospitalDetails($id)
+    {
+        $hospital = Hospital::where('status', 'approved')
+                           ->with('ownedServices')
+                           ->findOrFail($id);
+        
+        return view('public.hospital-details', compact('hospital'));
     }
 }

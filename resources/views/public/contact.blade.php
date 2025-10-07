@@ -22,7 +22,7 @@
                 
                 <div class="mb-4">
                     <h5><i class="fas fa-envelope text-primary"></i> Email</h5>
-                    <p>support@healthcard.com<br>info@healthcard.com</p>
+                    <p>support@kcchealthcard.com<br>info@kcchealthcard.com</p>
                 </div>
             </div>
             

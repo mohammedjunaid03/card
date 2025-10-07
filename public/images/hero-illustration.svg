@@ -1,0 +1,13 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="400" height="300" rx="20" fill="#f8f9fa"/>
+<rect x="50" y="50" width="300" height="200" rx="15" fill="white" stroke="#e9ecef" stroke-width="2"/>
+<rect x="70" y="70" width="260" height="40" rx="8" fill="#007bff"/>
+<text x="200" y="95" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">KCC HealthCard</text>
+<rect x="70" y="130" width="80" height="60" rx="5" fill="#e9ecef"/>
+<rect x="160" y="130" width="80" height="60" rx="5" fill="#e9ecef"/>
+<rect x="250" y="130" width="80" height="60" rx="5" fill="#e9ecef"/>
+<circle cx="110" cy="160" r="15" fill="#007bff"/>
+<circle cx="200" cy="160" r="15" fill="#28a745"/>
+<circle cx="290" cy="160" r="15" fill="#ffc107"/>
+<text x="200" y="220" text-anchor="middle" fill="#6c757d" font-family="Arial, sans-serif" font-size="12">Your Health, Our Priority</text>
+</svg>

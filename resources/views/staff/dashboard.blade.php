@@ -44,6 +44,20 @@
     
     <div class="col-md-6 mb-4">
         <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-users"></i> View Registered Users</h5>
+            </div>
+            <div class="card-body">
+                <p>View all registered users and manage their health cards</p>
+                <a href="{{ route('staff.users.index') }}" class="btn btn-info">
+                    <i class="fas fa-list"></i> View Users
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
             <div class="card-header bg-warning text-white">
                 <h5 class="mb-0"><i class="fas fa-file-check"></i> Verify Documents</h5>
             </div>

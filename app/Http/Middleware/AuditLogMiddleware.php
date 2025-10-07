@@ -36,35 +36,37 @@ class AuditLogMiddleware
             $userType = null;
             $userId = null;
 
-            // Determine which guard is being used
-            if (auth()->check()) {
-                $user = auth()->user();
-                $userType = 'user';
-                $userId = $user->id;
-            } elseif (auth('hospital')->check()) {
-                $user = auth('hospital')->user();
-                $userType = 'hospital';
+            // Check guards in order of priority (admin first, then others)
+            if (auth('admin')->check()) {
+                $user = auth('admin')->user();
+                $userType = 'admin';
                 $userId = $user->id;
             } elseif (auth('staff')->check()) {
                 $user = auth('staff')->user();
                 $userType = 'staff';
                 $userId = $user->id;
-            } elseif (auth('admin')->check()) {
-                $user = auth('admin')->user();
-                $userType = 'admin';
+            } elseif (auth('hospital')->check()) {
+                $user = auth('hospital')->user();
+                $userType = 'hospital';
+                $userId = $user->id;
+            } elseif (auth()->check()) {
+                $user = auth()->user();
+                $userType = 'user';
                 $userId = $user->id;
             }
 
-            if ($user) {
+            if ($user && $request->route()) {
+                $routeName = $request->route()->getName();
+                $action = $request->method() . ' ' . ($routeName ?: $request->path());
+                
                 AuditLog::create([
                     'user_id' => $userId,
                     'user_type' => $userType,
-                    'action' => $request->method() . ' ' . $request->route()->getName(),
-                    'description' => $this->getActionDescription($request),
+                    'action' => $action,
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
-                    'request_data' => $this->getRequestData($request),
-                    'response_status' => $response->getStatusCode(),
+                    'old_values' => null,
+                    'new_values' => $this->getRequestData($request),
                 ]);
             }
         } catch (\Exception $e) {

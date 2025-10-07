@@ -49,6 +49,10 @@
     text-align: center;
 }
 
+#sidebar.hidden {
+    transform: translateX(-100%);
+}
+
 #content {
     margin-left: var(--sidebar-width);
     flex: 1;
@@ -59,6 +63,10 @@
 
 #content.expanded {
     margin-left: 70px;
+}
+
+#content.full-width {
+    margin-left: 0;
 }
 
 /* Sidebar Styles */

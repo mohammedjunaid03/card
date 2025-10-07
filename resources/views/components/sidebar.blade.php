@@ -68,7 +68,7 @@
                 </a>
             </li>
             <li class="{{ request()->routeIs('hospital.availments*') ? 'active' : '' }}">
-                <a href="{{ route('hospital.availments') }}">
+                <a href="{{ route('hospital.availments.index') }}">
                     <i class="fas fa-receipt"></i> Availments
                 </a>
             </li>
