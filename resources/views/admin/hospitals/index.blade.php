@@ -65,6 +65,11 @@
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
+                        <div class="col-md-1">
+                            <button type="button" id="clearFilters" class="btn btn-outline-secondary w-100" title="Clear All Filters">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </form>
                     
                     <!-- Active Filters Display -->
@@ -119,7 +124,7 @@
                         <a href="{{ route('admin.hospitals.create') }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus"></i> Add Hospital
                         </a>
-                        <button onclick="exportHospitals()" class="btn btn-success btn-sm">
+                        <button id="exportHospitalsBtn" class="btn btn-success btn-sm">
                             <i class="fas fa-file-excel"></i> Export
                         </button>
                     </div>
@@ -297,11 +302,27 @@ document.addEventListener('DOMContentLoaded', function() {
             filterForm.submit();
         }
     };
+    
+    // Clear all filters
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            statusFilter.value = '';
+            cityFilter.value = '';
+            stateFilter.value = '';
+            contractStatusFilter.value = '';
+            filterForm.submit();
+        });
+    }
+    
+    // Export button functionality
+    const exportHospitalsBtn = document.getElementById('exportHospitalsBtn');
+    if (exportHospitalsBtn) {
+        exportHospitalsBtn.addEventListener('click', function() {
+            window.location.href = '{{ route("admin.reports.export") }}?type=hospitals';
+        });
+    }
 });
-
-// Export function
-window.exportHospitals = function() {
-    window.location.href = '{{ route("admin.reports.export") }}?type=hospitals';
-};
 </script>
 @endsection

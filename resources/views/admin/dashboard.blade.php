@@ -3,15 +3,18 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <h4 class="page-title">Admin Dashboard</h4>
+<div class="row">
+    <!-- Welcome Card -->
+    <div class="col-12 mb-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h3>Welcome, {{ auth()->guard('admin')->user()->name }}!</h3>
+                <p class="mb-0">Administrator Dashboard</p>
             </div>
         </div>
     </div>
 
+    <!-- Stats Cards -->
     <div class="row">
         <div class="col-xl-3 col-md-6">
             <div class="card">
@@ -94,13 +97,59 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Welcome to Health Card Management System</h4>
-                    <p class="card-text">You are logged in as an Administrator. Use the sidebar to navigate through different sections of the system.</p>
-                </div>
+    <!-- Quick Actions -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-users"></i> Manage Users</h5>
+            </div>
+            <div class="card-body">
+                <p>View and manage all registered users</p>
+                <a href="{{ route('admin.users.index') }}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> View Users
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-hospital"></i> Manage Hospitals</h5>
+            </div>
+            <div class="card-body">
+                <p>View and manage all registered hospitals</p>
+                <a href="{{ route('admin.hospitals.index') }}" class="btn btn-success">
+                    <i class="fas fa-list"></i> View Hospitals
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0"><i class="fas fa-user-tie"></i> Manage Staff</h5>
+            </div>
+            <div class="card-body">
+                <p>View and manage all staff members</p>
+                <a href="{{ route('admin.staff.index') }}" class="btn btn-warning">
+                    <i class="fas fa-list"></i> View Staff
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Analytics</h5>
+            </div>
+            <div class="card-body">
+                <p>View system analytics and reports</p>
+                <a href="{{ route('admin.analytics') }}" class="btn btn-info">
+                    <i class="fas fa-chart-bar"></i> View Analytics
+                </a>
             </div>
         </div>
     </div>

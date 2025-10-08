@@ -95,7 +95,7 @@
                     <a href="{{ route('admin.staff.create') }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-plus"></i> Add Staff
                     </a>
-                    <button onclick="exportStaff()" class="btn btn-success btn-sm">
+                    <button id="exportStaffBtn" class="btn btn-success btn-sm">
                         <i class="fas fa-file-excel"></i> Export
                     </button>
                 </div>
@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const staffCheckboxes = document.querySelectorAll('.staff-checkbox');
     const bulkButtons = document.querySelectorAll('#bulkActivate, #bulkDeactivate');
     const selectedCount = document.getElementById('selectedCount');
+    const exportBtn = document.getElementById('exportStaffBtn');
     
     // Filter functionality
     const filterForm = document.getElementById('filterForm');
@@ -397,10 +398,68 @@ document.addEventListener('DOMContentLoaded', function() {
         form.submit();
     }
 
-    // Export function
-    window.exportStaff = function() {
-        window.location.href = '{{ route("admin.reports.export") }}?type=staff';
-    };
+    // Export button event listener
+    if (exportBtn) {
+        console.log('Export button found, attaching event listener...');
+        exportBtn.addEventListener('click', function() {
+            console.log('Export button clicked!');
+            try {
+                const exportUrl = '{{ route("admin.reports.export") }}?type=staff';
+                console.log('Export URL:', exportUrl);
+                if (exportUrl && exportUrl !== '') {
+                    window.location.href = exportUrl;
+                } else {
+                    console.log('Using fallback CSV export...');
+                    exportStaffToCSV();
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+                console.log('Using fallback CSV export due to error...');
+                exportStaffToCSV();
+            }
+        });
+    } else {
+        console.error('Export button not found!');
+    }
+
 });
+
+// Export function (alias for exportStaffToCSV)
+function exportStaff() {
+    exportStaffToCSV();
+}
+
+// Fallback CSV export function
+function exportStaffToCSV() {
+    const table = document.querySelector('table');
+    if (!table) {
+        alert('No data to export');
+        return;
+    }
+    
+    let csv = [];
+    const rows = table.querySelectorAll('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const cols = row.querySelectorAll('td, th');
+        let csvRow = [];
+        
+        for (let j = 0; j < cols.length; j++) {
+            let cellText = cols[j].innerText.replace(/"/g, '""');
+            csvRow.push('"' + cellText + '"');
+        }
+        csv.push(csvRow.join(','));
+    }
+    
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'staff_export.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
 </script>
 @endsection

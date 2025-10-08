@@ -11,6 +11,7 @@ use App\Models\PatientAvailment;
 use App\Models\Service;
 use App\Exports\UsersExport;
 use App\Exports\HospitalsExport;
+use App\Exports\StaffExport;
 use App\Exports\AvailmentsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
@@ -179,22 +180,49 @@ class AdminReport extends Controller
 
         switch ($type) {
             case 'users':
+                $query = User::with(['healthCard']);
+                if ($startDate && $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+                $users = $query->get();
+                
                 if ($format === 'pdf') {
                     return $this->exportUsersPDF($startDate, $endDate, $filename);
                 }
-                return Excel::download(new UsersExport($startDate, $endDate), $filename . '.xlsx');
+                return Excel::download(new UsersExport($users), $filename . '.xlsx');
                 
             case 'hospitals':
+                $query = Hospital::with(['services']);
+                if ($startDate && $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+                $hospitals = $query->get();
+                
                 if ($format === 'pdf') {
                     return $this->exportHospitalsPDF($startDate, $endDate, $filename);
                 }
-                return Excel::download(new HospitalsExport($startDate, $endDate), $filename . '.xlsx');
+                return Excel::download(new HospitalsExport($hospitals), $filename . '.xlsx');
+                
+            case 'staff':
+                $query = \App\Models\Staff::with(['hospital']);
+                if ($startDate && $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+                $staff = $query->get();
+                
+                return Excel::download(new StaffExport($staff), $filename . '.xlsx');
                 
             case 'availments':
+                $query = PatientAvailment::with(['user', 'hospital', 'service']);
+                if ($startDate && $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }
+                $availments = $query->get();
+                
                 if ($format === 'pdf') {
                     return $this->exportAvailmentsPDF($startDate, $endDate, $filename);
                 }
-                return Excel::download(new AvailmentsExport($startDate, $endDate), $filename . '.xlsx');
+                return Excel::download(new AvailmentsExport($availments), $filename . '.xlsx');
                 
             default:
                 return redirect()->back()->with('error', 'Invalid report type.');

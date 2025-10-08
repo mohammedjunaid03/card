@@ -61,10 +61,7 @@ class User extends Authenticatable
     }
 
     // Accessors & Mutators
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // Removed setPasswordAttribute mutator to prevent double encryption
 
     // Helper Methods
     public function isActive()

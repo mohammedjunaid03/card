@@ -136,7 +136,7 @@
                     
                     <hr>
                     
-                    <h6>Change Password (Optional)</h6>
+                    <h6>Change Password</h6>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Current Password</label>

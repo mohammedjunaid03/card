@@ -13,7 +13,8 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        $notifications = Notification::where('user_id', $user->id)
+        $notifications = Notification::where('recipient_type', 'App\Models\User')
+            ->where('recipient_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -25,7 +26,8 @@ class NotificationController extends Controller
         $user = Auth::user();
         
         $notification = Notification::where('id', $id)
-            ->where('user_id', $user->id)
+            ->where('recipient_type', 'App\Models\User')
+            ->where('recipient_id', $user->id)
             ->firstOrFail();
 
         $notification->update(['is_read' => true]);
@@ -37,7 +39,8 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        Notification::where('user_id', $user->id)
+        Notification::where('recipient_type', 'App\Models\User')
+            ->where('recipient_id', $user->id)
             ->where('is_read', false)
             ->update(['is_read' => true]);
 

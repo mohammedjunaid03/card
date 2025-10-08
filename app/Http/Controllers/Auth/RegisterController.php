@@ -125,8 +125,17 @@ class RegisterController extends Controller
             'otp' => 'required|string|size:6',
         ]);
 
-        $otpRecord = Otp::where('identifier', session('user_email'))
+        $userId = session('user_id');
+        $user = User::find($userId);
+        
+        if (!$user) {
+            return redirect()->route('register')
+                ->with('error', 'Session expired. Please register again.');
+        }
+
+        $otpRecord = Otp::where('identifier', $user->email)
                         ->where('otp', $request->otp)
+                        ->where('type', 'registration')
                         ->where('is_used', false)
                         ->where('expires_at', '>', Carbon::now())
                         ->first();
@@ -150,17 +159,80 @@ class RegisterController extends Controller
             // Generate health card
             $healthCard = $this->cardGeneratorService->generateCard($user);
 
+            // Notify staff about pending approval
+            $this->notifyStaffForApproval($healthCard);
+
             // Clear session
-            session()->forget(['registration_otp', 'user_id', 'user_email']);
+            session()->forget(['registration_otp', 'user_id']);
 
             // Login user
             Auth::login($user);
 
             return redirect()->route('user.dashboard')
-                ->with('success', 'Account verified successfully! Your health card has been generated.');
+                ->with('success', 'Account verified successfully! Your health card has been generated and is pending staff approval.');
         }
 
         return redirect()->route('login')
             ->with('error', 'Verification failed. Please try again.');
+    }
+
+    /**
+     * Resend OTP for registration
+     */
+    public function resendOtp(Request $request)
+    {
+        if (!session('registration_otp')) {
+            return redirect()->route('register');
+        }
+
+        $userId = session('user_id');
+        $user = User::find($userId);
+
+        if (!$user) {
+            return redirect()->route('register');
+        }
+
+        // Generate new OTP
+        $otp = rand(100000, 999999);
+        
+        // Update existing OTP record
+        Otp::where('identifier', $user->email)
+            ->where('type', 'registration')
+            ->update([
+                'otp' => $otp,
+                'expires_at' => Carbon::now()->addMinutes(10),
+                'is_used' => false,
+            ]);
+
+        // Update session
+        session(['registration_otp' => $otp]);
+
+        return redirect()->back()
+            ->with('success', 'New OTP sent to your email address. OTP: ' . $otp);
+    }
+
+    /**
+     * Notify staff about pending health card approval
+     */
+    private function notifyStaffForApproval($healthCard)
+    {
+        // Get all staff users (you may need to adjust this based on your user roles)
+        $staffUsers = User::where('user_type', 'staff')
+            ->orWhere('user_type', 'admin')
+            ->get();
+
+        foreach ($staffUsers as $staff) {
+            $staff->notifications()->create([
+                'type' => 'health_card_pending_approval',
+                'title' => 'New Health Card Pending Approval',
+                'message' => "A new health card application from {$healthCard->user->name} ({$healthCard->card_number}) is pending your approval.",
+                'data' => [
+                    'health_card_id' => $healthCard->id,
+                    'user_name' => $healthCard->user->name,
+                    'card_number' => $healthCard->card_number,
+                    'user_id' => $healthCard->user_id
+                ]
+            ]);
+        }
     }
 }

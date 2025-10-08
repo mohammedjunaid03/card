@@ -59,6 +59,8 @@
     transition: var(--transition);
     background: #f8f9fa;
     min-height: 100vh;
+    position: relative;
+    z-index: 1;
 }
 
 #content.expanded {
@@ -146,11 +148,12 @@
     padding: 15px 30px;
     box-shadow: var(--box-shadow);
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 999;
+    margin-bottom: 0;
 }
 
 .header-left {
@@ -270,6 +273,25 @@
     padding: 25px;
     margin-bottom: 25px;
     transition: var(--transition);
+    position: relative;
+    z-index: 1;
+}
+
+/* Container spacing */
+.container-fluid {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Row spacing */
+.row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.row > * {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .dashboard-card:hover {

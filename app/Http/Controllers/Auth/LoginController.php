@@ -28,6 +28,12 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Clear all existing sessions before login
+        Auth::guard('web')->logout();
+        Auth::guard('hospital')->logout();
+        Auth::guard('staff')->logout();
+        Auth::guard('admin')->logout();
+
         $guard = match ($request->input('user_type')) {
             'user' => 'web',
             'hospital' => 'hospital',
@@ -47,17 +53,14 @@ class LoginController extends Controller
         }
 
         $user = Auth::guard($guard)->user();
-
-        // Status checks by guard
-        $isAllowed = match ($guard) {
-            'hospital' => ($user->status ?? null) === 'approved',
-            default => ($user->status ?? null) === 'active',
-        };
-
-        if (!$isAllowed) {
+        $status = $user->status ?? null;
+        
+        // **CORRECTED LOGIC:** Only block users whose accounts are explicitly inactive or blocked.
+        // Allow 'pending' users to pass through to their dashboard controller/view.
+        if ($status === 'blocked' || $status === 'inactive') { 
             Auth::guard($guard)->logout();
             throw ValidationException::withMessages([
-                'login' => 'Your account is not active/approved. Please contact support.',
+                'login' => 'Your account is currently disabled. Please contact support.',
             ]);
         }
 

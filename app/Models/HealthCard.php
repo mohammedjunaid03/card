@@ -18,11 +18,16 @@ class HealthCard extends Model
         'issued_date',
         'expiry_date',
         'status',
+        'approval_status',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'issued_date' => 'date',
         'expiry_date' => 'date',
+        'approved_at' => 'datetime',
     ];
 
     /**
@@ -31,6 +36,11 @@ class HealthCard extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**
@@ -43,7 +53,22 @@ class HealthCard extends Model
 
     public function isActive(): bool
     {
-        return $this->status === 'active' && !$this->isExpired();
+        return $this->status === 'active' && $this->approval_status === 'approved' && !$this->isExpired();
+    }
+
+    public function isPending(): bool
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->approval_status === 'rejected';
     }
 
     public function daysUntilExpiry(): ?int

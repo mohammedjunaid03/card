@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HealthCardController extends Controller
 {
@@ -12,9 +13,36 @@ class HealthCardController extends Controller
         return view('user.health-card');
     }
 
+    public function show()
+    {
+        $user = Auth::user();
+        $healthCard = $user->healthCard;
+        
+        if (!$healthCard) {
+            return redirect()->route('user.dashboard')
+                ->with('error', 'No health card found. Please contact support.');
+        }
+        
+        return view('user.health-card', compact('healthCard'));
+    }
+
     public function download()
     {
-        // Health card download logic
-        return response()->download('path/to/health-card.pdf');
+        $user = Auth::user();
+        $healthCard = $user->healthCard;
+        
+        if (!$healthCard || !$healthCard->pdf_path) {
+            return redirect()->back()
+                ->with('error', 'Health card PDF not available.');
+        }
+        
+        $filePath = storage_path('app/public/' . $healthCard->pdf_path);
+        
+        if (!file_exists($filePath)) {
+            return redirect()->back()
+                ->with('error', 'Health card PDF file not found.');
+        }
+        
+        return response()->download($filePath, 'health-card-' . $healthCard->card_number . '.pdf');
     }
 }

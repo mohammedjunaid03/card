@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\PasswordResetController;
 
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\User\ProfileController as UserProfile;
@@ -16,20 +17,12 @@ use App\Http\Controllers\User\HospitalSearchController;
 use App\Http\Controllers\User\NotificationController as UserNotification;
 use App\Http\Controllers\User\SupportTicketController;
 
-use App\Http\Controllers\Hospital\DashboardController as HospitalDashboard;
-use App\Http\Controllers\Hospital\ProfileController as HospitalProfile;
-use App\Http\Controllers\Hospital\ServiceController;
-use App\Http\Controllers\Hospital\CardVerificationController;
-use App\Http\Controllers\Hospital\PatientAvailmentController;
-use App\Http\Controllers\Hospital\PatientController;
-use App\Http\Controllers\Hospital\HospitalReport;
-use App\Http\Controllers\Hospital\AnalyticsController;
-
 use App\Http\Controllers\Staff\DashboardController as StaffDashboard;
 use App\Http\Controllers\Staff\UserManagementController as StaffUserManagement;
 use App\Http\Controllers\Staff\HospitalManagementController as StaffHospitalManagement;
 use App\Http\Controllers\Staff\DocumentVerificationController;
 use App\Http\Controllers\Staff\ReportController as StaffReport;
+use App\Http\Controllers\Staff\HealthCardApprovalController as StaffHealthCardApproval;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\AdminUserManagement;
@@ -42,6 +35,15 @@ use App\Http\Controllers\Admin\AdminNotification;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ServiceManagementController;
+
+use App\Http\Controllers\Hospital\DashboardController as HospitalDashboard;
+use App\Http\Controllers\Hospital\ProfileController as HospitalProfile;
+use App\Http\Controllers\Hospital\ServiceController;
+use App\Http\Controllers\Hospital\CardVerificationController;
+use App\Http\Controllers\Hospital\PatientAvailmentController;
+use App\Http\Controllers\Hospital\PatientController;
+use App\Http\Controllers\Hospital\HospitalReport;
+use App\Http\Controllers\Hospital\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,10 +83,14 @@ Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('otp
 Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('otp.verify.submit');
 
 // Password Reset
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/forgot-password/otp', [PasswordResetController::class, 'sendOtp'])->name('password.otp');
+Route::get('/verify-otp', [PasswordResetController::class, 'showVerifyOtpForm'])->name('password.verify-otp');
+Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('password.verify-otp.submit');
+Route::post('/resend-otp', [PasswordResetController::class, 'resendOtp'])->name('password.resend-otp');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
 /*
 |--------------------------------------------------------------------------
@@ -112,37 +118,20 @@ Route::middleware(['auth:web', 'audit_log'])->prefix('user')->name('user.')->gro
 
 /*
 |--------------------------------------------------------------------------
-| Hospital Module Routes
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth:hospital', 'audit_log'])->prefix('hospital')->name('hospital.')->group(function () {
-    Route::get('/dashboard', [HospitalDashboard::class, 'index'])->name('dashboard');
-    Route::get('/profile', [HospitalProfile::class, 'show'])->name('profile');
-    Route::put('/profile', [HospitalProfile::class, 'update'])->name('profile.update');
-
-    Route::resource('services', ServiceController::class);
-
-    Route::get('/verify-card', [CardVerificationController::class, 'showVerificationForm'])->name('verify-card');
-    Route::post('/verify-card', [CardVerificationController::class, 'verify'])->name('verify-card.submit');
-
-    Route::get('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
-    Route::post('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
-    Route::post('/patient-availments/record', [PatientAvailmentController::class, 'recordAvailment'])->name('patient-availments.record');
-    Route::resource('availments', PatientAvailmentController::class)->except(['edit', 'update', 'destroy']);
-    Route::get('/patients', [PatientController::class, 'index'])->name('patients');
-    Route::get('/patients/{id}', [PatientController::class, 'show'])->name('patients.show');
-
-    Route::get('/reports', [HospitalReport::class, 'index'])->name('reports');
-    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
-});
-
-/*
-|--------------------------------------------------------------------------
 | Staff Module Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth:staff', 'audit_log'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffDashboard::class, 'index'])->name('dashboard');
+
+    // Health Card Approval Routes
+    Route::get('/health-cards/pending', [StaffHealthCardApproval::class, 'index'])->name('health-cards.pending');
+    Route::get('/health-cards/{healthCard}', [StaffHealthCardApproval::class, 'show'])->name('health-cards.show');
+    Route::post('/health-cards/{healthCard}/approve', [StaffHealthCardApproval::class, 'approve'])->name('health-cards.approve');
+    Route::post('/health-cards/{healthCard}/reject', [StaffHealthCardApproval::class, 'reject'])->name('health-cards.reject');
+    Route::get('/health-cards', [StaffHealthCardApproval::class, 'all'])->name('health-cards.all');
+    Route::get('/health-cards/search', [StaffHealthCardApproval::class, 'search'])->name('health-cards.search');
+    Route::get('/health-cards/verify', [StaffHealthCardApproval::class, 'verify'])->name('health-cards.verify');
 
     Route::get('/users', [StaffUserManagement::class, 'index'])->name('users.index');
     Route::get('/users/create', [StaffUserManagement::class, 'create'])->name('users.create');
@@ -169,6 +158,15 @@ Route::middleware(['auth:staff', 'audit_log'])->prefix('staff')->name('staff.')-
 */
 Route::middleware(['auth:admin', 'audit_log'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+
+    // Health Card Approval Routes
+    Route::get('/health-cards/pending', [StaffHealthCardApproval::class, 'index'])->name('health-cards.pending');
+    Route::get('/health-cards/{healthCard}', [StaffHealthCardApproval::class, 'show'])->name('health-cards.show');
+    Route::post('/health-cards/{healthCard}/approve', [StaffHealthCardApproval::class, 'approve'])->name('health-cards.approve');
+    Route::post('/health-cards/{healthCard}/reject', [StaffHealthCardApproval::class, 'reject'])->name('health-cards.reject');
+    Route::get('/health-cards', [StaffHealthCardApproval::class, 'all'])->name('health-cards.all');
+    Route::get('/health-cards/search', [StaffHealthCardApproval::class, 'search'])->name('health-cards.search');
+    Route::get('/health-cards/verify', [StaffHealthCardApproval::class, 'verify'])->name('health-cards.verify');
 
     Route::resource('users', AdminUserManagement::class);
     Route::put('/users/{id}/status', [AdminUserManagement::class, 'updateStatus'])->name('users.status');
@@ -219,4 +217,30 @@ Route::middleware(['auth:admin', 'audit_log'])->prefix('admin')->name('admin.')-
     Route::post('/services', [ServiceManagementController::class, 'store'])->name('services.store');
     Route::put('/services/{id}', [ServiceManagementController::class, 'update'])->name('services.update');
     Route::delete('/services/{id}', [ServiceManagementController::class, 'destroy'])->name('services.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Hospital Module Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:hospital', 'audit_log'])->prefix('hospital')->name('hospital.')->group(function () {
+    Route::get('/dashboard', [HospitalDashboard::class, 'index'])->name('dashboard');
+    Route::get('/profile', [HospitalProfile::class, 'show'])->name('profile');
+    Route::put('/profile', [HospitalProfile::class, 'update'])->name('profile.update');
+
+    Route::resource('services', ServiceController::class);
+
+    Route::get('/verify-card', [CardVerificationController::class, 'showVerificationForm'])->name('verify-card');
+    Route::post('/verify-card', [CardVerificationController::class, 'verify'])->name('verify-card.submit');
+
+    Route::get('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
+    Route::post('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
+    Route::post('/patient-availments/record', [PatientAvailmentController::class, 'recordAvailment'])->name('patient-availments.record');
+    Route::resource('availments', PatientAvailmentController::class)->except(['edit', 'update', 'destroy']);
+    Route::get('/patients', [PatientController::class, 'index'])->name('patients');
+    Route::get('/patients/{id}', [PatientController::class, 'show'])->name('patients.show');
+
+    Route::get('/reports', [HospitalReport::class, 'index'])->name('reports');
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
 });

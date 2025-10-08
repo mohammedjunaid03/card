@@ -36,7 +36,6 @@ class AdminNotification extends Controller
             'title' => $request->title,
             'message' => $request->message,
             'type' => $request->type,
-            'created_by' => auth()->id()
         ];
 
         switch ($request->target_type) {
@@ -45,8 +44,8 @@ class AdminNotification extends Controller
                 $users = User::where('status', 'active')->get();
                 foreach ($users as $user) {
                     Notification::create(array_merge($notificationData, [
-                        'user_id' => $user->id,
-                        'target_type' => 'user'
+                        'recipient_type' => 'App\\Models\\User',
+                        'recipient_id' => $user->id
                     ]));
                 }
 
@@ -54,8 +53,8 @@ class AdminNotification extends Controller
                 $hospitals = Hospital::where('status', 'active')->get();
                 foreach ($hospitals as $hospital) {
                     Notification::create(array_merge($notificationData, [
-                        'hospital_id' => $hospital->id,
-                        'target_type' => 'hospital'
+                        'recipient_type' => 'App\\Models\\Hospital',
+                        'recipient_id' => $hospital->id
                     ]));
                 }
 
@@ -63,8 +62,8 @@ class AdminNotification extends Controller
                 $staff = Staff::where('status', 'active')->get();
                 foreach ($staff as $staffMember) {
                     Notification::create(array_merge($notificationData, [
-                        'staff_id' => $staffMember->id,
-                        'target_type' => 'staff'
+                        'recipient_type' => 'App\\Models\\Staff',
+                        'recipient_id' => $staffMember->id
                     ]));
                 }
                 break;
@@ -73,8 +72,8 @@ class AdminNotification extends Controller
                 $users = User::where('status', 'active')->get();
                 foreach ($users as $user) {
                     Notification::create(array_merge($notificationData, [
-                        'user_id' => $user->id,
-                        'target_type' => 'user'
+                        'recipient_type' => 'App\\Models\\User',
+                        'recipient_id' => $user->id
                     ]));
                 }
                 break;
@@ -83,8 +82,8 @@ class AdminNotification extends Controller
                 $hospitals = Hospital::where('status', 'active')->get();
                 foreach ($hospitals as $hospital) {
                     Notification::create(array_merge($notificationData, [
-                        'hospital_id' => $hospital->id,
-                        'target_type' => 'hospital'
+                        'recipient_type' => 'App\\Models\\Hospital',
+                        'recipient_id' => $hospital->id
                     ]));
                 }
                 break;
@@ -93,8 +92,8 @@ class AdminNotification extends Controller
                 $staff = Staff::where('status', 'active')->get();
                 foreach ($staff as $staffMember) {
                     Notification::create(array_merge($notificationData, [
-                        'staff_id' => $staffMember->id,
-                        'target_type' => 'staff'
+                        'recipient_type' => 'App\\Models\\Staff',
+                        'recipient_id' => $staffMember->id
                     ]));
                 }
                 break;
@@ -102,8 +101,8 @@ class AdminNotification extends Controller
             case 'specific':
                 foreach ($request->target_ids as $targetId) {
                     Notification::create(array_merge($notificationData, [
-                        'target_id' => $targetId,
-                        'target_type' => 'specific'
+                        'recipient_type' => 'App\\Models\\User',
+                        'recipient_id' => $targetId
                     ]));
                 }
                 break;

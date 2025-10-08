@@ -21,9 +21,9 @@ class CardGeneratorService
         // Generate unique card number
         $cardNumber = $this->generateCardNumber();
         
-        // Calculate dates
+        // Calculate dates - 1 year validity
         $issuedDate = now();
-        $expiryDate = now()->addYears(config('app.card_validity_years', 5));
+        $expiryDate = now()->addYear();
         
         // Generate QR Code
         $qrCodePath = $this->generateQRCode($cardNumber);
@@ -31,7 +31,7 @@ class CardGeneratorService
         // Generate PDF
         $pdfPath = $this->generatePDF($user, $cardNumber, $issuedDate, $expiryDate, $qrCodePath);
         
-        // Create Health Card record
+        // Create Health Card record with pending approval
         $healthCard = HealthCard::create([
             'user_id' => $user->id,
             'card_number' => $cardNumber,
@@ -39,9 +39,64 @@ class CardGeneratorService
             'pdf_path' => $pdfPath,
             'issued_date' => $issuedDate,
             'expiry_date' => $expiryDate,
-            'status' => 'active',
+            'status' => 'pending',
+            'approval_status' => 'pending',
         ]);
         
+        return $healthCard;
+    }
+
+    /**
+     * Approve a health card
+     */
+    public function approveCard(HealthCard $healthCard, User $approver)
+    {
+        $healthCard->update([
+            'approval_status' => 'approved',
+            'status' => 'active',
+            'approved_by' => $approver->id,
+            'approved_at' => now(),
+        ]);
+
+        // Send notification to user
+        $healthCard->user->notifications()->create([
+            'type' => 'health_card_approved',
+            'title' => 'Health Card Approved',
+            'message' => "Your health card ({$healthCard->card_number}) has been approved and is now active. You can now use it at partner hospitals.",
+            'data' => [
+                'card_number' => $healthCard->card_number,
+                'approved_at' => now()->format('d-m-Y H:i:s')
+            ]
+        ]);
+
+        return $healthCard;
+    }
+
+    /**
+     * Reject a health card
+     */
+    public function rejectCard(HealthCard $healthCard, User $approver, string $reason = null)
+    {
+        $healthCard->update([
+            'approval_status' => 'rejected',
+            'status' => 'rejected',
+            'approved_by' => $approver->id,
+            'approved_at' => now(),
+            'rejection_reason' => $reason,
+        ]);
+
+        // Send notification to user
+        $healthCard->user->notifications()->create([
+            'type' => 'health_card_rejected',
+            'title' => 'Health Card Rejected',
+            'message' => "Your health card application has been rejected. Reason: " . ($reason ?: 'Please contact support for more information.'),
+            'data' => [
+                'card_number' => $healthCard->card_number,
+                'rejection_reason' => $reason,
+                'rejected_at' => now()->format('d-m-Y H:i:s')
+            ]
+        ]);
+
         return $healthCard;
     }
     

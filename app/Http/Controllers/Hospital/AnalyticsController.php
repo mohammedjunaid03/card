@@ -3,49 +3,40 @@
 namespace App\Http\Controllers\Hospital;
 
 use App\Http\Controllers\Controller;
-use App\Models\PatientAvailment;
-use App\Models\Service;
+use App\Models\HealthCard;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AnalyticsController extends Controller
 {
-    public function index()
+    public function showVerificationForm()
     {
-        $hospitalId = auth('hospital')->id();
-        
-        // Basic stats
-        $totalPatients = PatientAvailment::where('hospital_id', $hospitalId)
-            ->distinct('user_id')
-            ->count('user_id');
-            
-        $totalServices = Service::where('hospital_id', $hospitalId)->count();
-        
-        $totalAvailments = PatientAvailment::where('hospital_id', $hospitalId)->count();
-        
-        $totalDiscount = PatientAvailment::where('hospital_id', $hospitalId)->sum('discount_amount');
-        
-        // Monthly trends
-        $monthlyData = PatientAvailment::where('hospital_id', $hospitalId)
-            ->selectRaw('MONTH(availment_date) as month, COUNT(*) as availments, SUM(discount_amount) as discounts')
-            ->whereYear('availment_date', date('Y'))
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
+        return view('hospital.verify-card');
+    }
 
-        // Service popularity
-        $serviceStats = Service::where('hospital_id', $hospitalId)
-            ->withCount('availments')
-            ->orderBy('availments_count', 'desc')
-            ->limit(10)
-            ->get();
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'card_number' => 'required|string',
+        ]);
 
-        return view('hospital.analytics.index', compact(
-            'totalPatients',
-            'totalServices', 
-            'totalAvailments',
-            'totalDiscount',
-            'monthlyData',
-            'serviceStats'
-        ));
+        $cardNumber = $request->input('card_number');
+        
+        // Try to find the health card
+        $healthCard = HealthCard::where('card_number', $cardNumber)
+            ->where('status', 'active')
+            ->with('user')
+            ->first();
+
+        if (!$healthCard) {
+            return back()->withErrors(['card_number' => 'Invalid or inactive health card.']);
+        }
+
+        // Check if card is expired
+        if ($healthCard->isExpired()) {
+            return back()->withErrors(['card_number' => 'This health card has expired.']);
+        }
+
+        return view('hospital.card-details', compact('healthCard'));
     }
 }

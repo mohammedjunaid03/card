@@ -25,7 +25,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Bangalore',
                 'state' => 'Karnataka',
                 'pincode' => '560076',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Cardiology', 'discount' => 15],
@@ -42,7 +43,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Bangalore',
                 'state' => 'Karnataka',
                 'pincode' => '560017',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Neurology', 'discount' => 12],
@@ -59,7 +61,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Bangalore',
                 'state' => 'Karnataka',
                 'pincode' => '560092',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Pediatrics', 'discount' => 18],
@@ -75,7 +78,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Bangalore',
                 'state' => 'Karnataka',
                 'pincode' => '560060',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Orthopedics', 'discount' => 15],
@@ -94,7 +98,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Mumbai',
                 'state' => 'Maharashtra',
                 'pincode' => '400080',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Oncology', 'discount' => 10],
@@ -111,7 +116,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Mumbai',
                 'state' => 'Maharashtra',
                 'pincode' => '400053',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Cardiology', 'discount' => 25],
@@ -130,7 +136,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Delhi',
                 'state' => 'Delhi',
                 'pincode' => '110017',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Ophthalmology', 'discount' => 10],
@@ -147,7 +154,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Delhi',
                 'state' => 'Delhi',
                 'pincode' => '110029',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Cardiology', 'discount' => 30],
@@ -166,7 +174,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Chennai',
                 'state' => 'Tamil Nadu',
                 'pincode' => '600006',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'General Consultation', 'discount' => 10],
@@ -183,7 +192,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Chennai',
                 'state' => 'Tamil Nadu',
                 'pincode' => '600020',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Pediatrics', 'discount' => 10],
@@ -202,7 +212,8 @@ class HospitalSeeder extends Seeder
                 'city' => 'Hyderabad',
                 'state' => 'Telangana',
                 'pincode' => '500032',
-                'status' => 'approved',
+                'status' => 'active',
+                'approved_at' => now(),
                 'email_verified_at' => now(),
                 'services' => [
                     ['name' => 'Dentistry', 'discount' => 20],
