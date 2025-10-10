@@ -10,13 +10,24 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h3>Welcome, {{ $hospital->name }}!</h3>
-                        <p class="mb-0">{{ $hospital->city }}, {{ $hospital->state }}</p>
+                        @if($hospital)
+                            <h3>Welcome, {{ $hospital->name }}!</h3>
+                            <p class="mb-0">{{ $hospital->city }}, {{ $hospital->state }}</p>
+                        @else
+                            <h3>Hospital Dashboard</h3>
+                            <p class="mb-0">Please login to access your hospital dashboard</p>
+                        @endif
                     </div>
                     <div class="col-md-4 text-end">
-                        <span class="badge bg-light text-primary fs-6">
-                            Status: {{ ucfirst($hospital->status) }}
-                        </span>
+                        @if($hospital)
+                            <span class="badge bg-light text-primary fs-6">
+                                Status: {{ ucfirst($hospital->status) }}
+                            </span>
+                        @else
+                            <a href="{{ route('login', ['role' => 'hospital']) }}" class="btn btn-light">
+                                Login
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -72,7 +83,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-subtitle mb-2">Services</h6>
-                        <h3 class="mb-0">{{ $hospital->services->count() }}</h3>
+                        <h3 class="mb-0">{{ $hospital ? $hospital->services->count() : 0 }}</h3>
                     </div>
                     <i class="fas fa-stethoscope fa-3x opacity-50"></i>
                 </div>

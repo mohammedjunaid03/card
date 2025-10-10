@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ServiceManagementController;
 
+
 use App\Http\Controllers\Hospital\DashboardController as HospitalDashboard;
 use App\Http\Controllers\Hospital\ProfileController as HospitalProfile;
 use App\Http\Controllers\Hospital\ServiceController;
@@ -66,28 +67,43 @@ Route::get('/partner-benefits', [HomeController::class, 'partnerBenefits'])->nam
 Route::get('/terms-conditions', [HomeController::class, 'termsConditions'])->name('terms-conditions');
 Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 
-// Hospital Details
-Route::get('/hospital/{id}', [HomeController::class, 'hospitalDetails'])->name('hospital.details');
+// Hospital Details (moved to be more specific)
+Route::get('/hospital-details/{id}', [HomeController::class, 'hospitalDetails'])->name('hospital.details');
 
 // API Routes for public stats
 Route::get('/api/stats', [StatsController::class, 'index']);
 
+
 // Auth
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+
+// Logout routes for all guards
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/user/logout', [LoginController::class, 'logout'])->name('user.logout');
+Route::post('/hospital/logout', [LoginController::class, 'logout'])->name('hospital.logout');
+Route::post('/staff/logout', [LoginController::class, 'logout'])->name('staff.logout');
+Route::post('/admin/logout', [LoginController::class, 'logout'])->name('admin.logout');
+
+// Keep-alive route for session refresh
+Route::get('/keep-alive', function() {
+    request()->session()->regenerateToken();
+    return response('', 200);
+})->name('keep-alive');
+
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/verify-otp', [RegisterController::class, 'showOtpForm'])->name('otp.verify');
 Route::post('/verify-otp', [RegisterController::class, 'verifyOtp'])->name('otp.verify.submit');
+Route::post('/resend-registration-otp', [RegisterController::class, 'resendOtp'])->name('otp.resend');
 
 // Password Reset
 Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('/forgot-password/otp', [PasswordResetController::class, 'sendOtp'])->name('password.otp');
-Route::get('/verify-otp', [PasswordResetController::class, 'showVerifyOtpForm'])->name('password.verify-otp');
-Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp'])->name('password.verify-otp.submit');
+Route::get('/verify-password-otp', [PasswordResetController::class, 'showVerifyOtpForm'])->name('password.verify-otp');
+Route::post('/verify-password-otp', [PasswordResetController::class, 'verifyOtp'])->name('password.verify-otp.submit');
 Route::post('/resend-otp', [PasswordResetController::class, 'resendOtp'])->name('password.resend-otp');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
@@ -173,16 +189,17 @@ Route::middleware(['auth:admin', 'audit_log'])->prefix('admin')->name('admin.')-
     Route::post('/users/{id}/issue-card', [AdminUserManagement::class, 'issueHealthCard'])->name('users.issue-card');
     Route::post('/users/bulk-issue-cards', [AdminUserManagement::class, 'bulkIssueHealthCards'])->name('users.bulk-issue-cards');
     Route::post('/users/bulk-status', [AdminUserManagement::class, 'bulkUpdateStatus'])->name('users.bulk-status');
-            Route::resource('hospitals', AdminHospitalManagement::class);
-            Route::put('/hospitals/{id}/approve', [AdminHospitalManagement::class, 'approve'])->name('hospitals.approve');
-            Route::put('/hospitals/{id}/reject', [AdminHospitalManagement::class, 'reject'])->name('hospitals.reject');
-            
-            // Contract Management Routes
-            Route::get('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'showContract'])->name('hospitals.contract');
-            Route::post('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'storeContract'])->name('hospitals.contract.store');
-            Route::put('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'updateContract'])->name('hospitals.contract.update');
-            Route::post('/hospitals/{id}/contract/renew', [AdminHospitalManagement::class, 'renewContract'])->name('hospitals.contract.renew');
-            Route::post('/hospitals/{id}/contract/terminate', [AdminHospitalManagement::class, 'terminateContract'])->name('hospitals.contract.terminate');
+    
+    Route::resource('hospitals', AdminHospitalManagement::class);
+    Route::put('/hospitals/{id}/approve', [AdminHospitalManagement::class, 'approve'])->name('hospitals.approve');
+    Route::put('/hospitals/{id}/reject', [AdminHospitalManagement::class, 'reject'])->name('hospitals.reject');
+    
+    // Contract Management Routes
+    Route::get('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'showContract'])->name('hospitals.contract');
+    Route::post('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'storeContract'])->name('hospitals.contract.store');
+    Route::put('/hospitals/{id}/contract', [AdminHospitalManagement::class, 'updateContract'])->name('hospitals.contract.update');
+    Route::post('/hospitals/{id}/contract/renew', [AdminHospitalManagement::class, 'renewContract'])->name('hospitals.contract.renew');
+    Route::post('/hospitals/{id}/contract/terminate', [AdminHospitalManagement::class, 'terminateContract'])->name('hospitals.contract.terminate');
 
     Route::resource('staff', StaffManagementController::class);
     Route::put('/staff/{id}/status', [StaffManagementController::class, 'updateStatus'])->name('staff.status');
@@ -203,7 +220,6 @@ Route::middleware(['auth:admin', 'audit_log'])->prefix('admin')->name('admin.')-
     Route::post('/notifications/{id}/mark-read', [AdminNotification::class, 'markAsRead'])->name('notifications.mark-read');
     Route::post('/notifications/mark-all-read', [AdminNotification::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::delete('/notifications/{id}', [AdminNotification::class, 'destroy'])->name('notifications.destroy');
-    Route::post('/notifications', [AdminNotification::class, 'send'])->name('notifications.send');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs');
     Route::get('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
@@ -221,26 +237,46 @@ Route::middleware(['auth:admin', 'audit_log'])->prefix('admin')->name('admin.')-
 
 /*
 |--------------------------------------------------------------------------
-| Hospital Module Routes
+| Hospital Module Routes - CORRECTED
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:hospital', 'audit_log'])->prefix('hospital')->name('hospital.')->group(function () {
+// Hospital Routes (no authentication required)
+Route::prefix('hospital')->name('hospital.')->group(function () {
+    // Login routes
+    Route::get('/login', function() {
+        return redirect()->route('login', ['role' => 'hospital']);
+    })->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+    
+    
+    // Dashboard
     Route::get('/dashboard', [HospitalDashboard::class, 'index'])->name('dashboard');
+
+    // Profile
     Route::get('/profile', [HospitalProfile::class, 'show'])->name('profile');
     Route::put('/profile', [HospitalProfile::class, 'update'])->name('profile.update');
 
+    // Services
     Route::resource('services', ServiceController::class);
 
+    // Card Verification
     Route::get('/verify-card', [CardVerificationController::class, 'showVerificationForm'])->name('verify-card');
     Route::post('/verify-card', [CardVerificationController::class, 'verify'])->name('verify-card.submit');
 
+    // Patient Availments
     Route::get('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
-    Route::post('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card');
+    Route::post('/patient-availments/verify-card', [PatientAvailmentController::class, 'verifyCard'])->name('patient-availments.verify-card.submit');
     Route::post('/patient-availments/record', [PatientAvailmentController::class, 'recordAvailment'])->name('patient-availments.record');
     Route::resource('availments', PatientAvailmentController::class)->except(['edit', 'update', 'destroy']);
+
+    // Patients
     Route::get('/patients', [PatientController::class, 'index'])->name('patients');
     Route::get('/patients/{id}', [PatientController::class, 'show'])->name('patients.show');
 
+    // Reports & Analytics
     Route::get('/reports', [HospitalReport::class, 'index'])->name('reports');
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+
+    // Logout
+    Route::post('/logout', [LoginController::class, 'hospitalLogout'])->name('logout');
 });

@@ -4,9 +4,9 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section bg-primary text-white py-5">
-    <div class="container">
-        <div class="row align-items-center">
+<section class="hero-section">
+    <div class="content-wrapper">
+        <div class="row align-items-center mx-0">
             <div class="col-lg-8">
                 <h1 class="display-4 fw-bold">How It Works</h1>
                 <p class="lead">Simple steps to get your health card and start saving</p>
@@ -17,24 +17,23 @@
 
 <!-- Steps Section -->
 <section class="py-5">
-    <div class="container">
+    <div class="content-wrapper">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Get Started in 4 Easy Steps</h2>
             <p class="text-muted">From registration to using your card at hospitals</p>
         </div>
         
-        <div class="row">
+        <div class="row mx-0">
             <!-- Step 1 -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card h-100 text-center border-0 shadow-sm step-card">
                     <div class="card-body">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-4" 
-                             style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto;">
-                            1
+                        <div class="step-number">
+                            <span class="step-icon">1</span>
                         </div>
-                        <h5 class="fw-bold">Register Online</h5>
-                        <p class="text-muted">Fill out our simple registration form with your personal details, medical information, and upload required documents.</p>
-                        <ul class="list-unstyled text-start">
+                        <h5 class="fw-bold step-title">Register Online</h5>
+                        <p class="text-muted step-description">Fill out our simple registration form with your personal details, medical information, and upload required documents.</p>
+                        <ul class="list-unstyled text-start step-features">
                             <li><i class="fas fa-check text-success me-2"></i>Personal Information</li>
                             <li><i class="fas fa-check text-success me-2"></i>Medical Details</li>
                             <li><i class="fas fa-check text-success me-2"></i>Document Upload</li>
@@ -46,15 +45,14 @@
             
             <!-- Step 2 -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card h-100 text-center border-0 shadow-sm step-card">
                     <div class="card-body">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-4" 
-                             style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto;">
-                            2
+                        <div class="step-number">
+                            <span class="step-icon">2</span>
                         </div>
-                        <h5 class="fw-bold">Verify & Approve</h5>
-                        <p class="text-muted">Our team verifies your documents and approves your application. You'll receive an OTP for email verification.</p>
-                        <ul class="list-unstyled text-start">
+                        <h5 class="fw-bold step-title">Verify & Approve</h5>
+                        <p class="text-muted step-description">Our team verifies your documents and approves your application. You'll receive an OTP for email verification.</p>
+                        <ul class="list-unstyled text-start step-features">
                             <li><i class="fas fa-check text-success me-2"></i>Document Verification</li>
                             <li><i class="fas fa-check text-success me-2"></i>Email OTP</li>
                             <li><i class="fas fa-check text-success me-2"></i>Application Review</li>
@@ -66,15 +64,14 @@
             
             <!-- Step 3 -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card h-100 text-center border-0 shadow-sm step-card">
                     <div class="card-body">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-4" 
-                             style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto;">
-                            3
+                        <div class="step-number">
+                            <span class="step-icon">3</span>
                         </div>
-                        <h5 class="fw-bold">Get Your Card</h5>
-                        <p class="text-muted">Your digital health card is generated instantly with a unique QR code. Download the PDF or access it from your dashboard.</p>
-                        <ul class="list-unstyled text-start">
+                        <h5 class="fw-bold step-title">Get Your Card</h5>
+                        <p class="text-muted step-description">Your digital health card is generated instantly with a unique QR code. Download the PDF or access it from your dashboard.</p>
+                        <ul class="list-unstyled text-start step-features">
                             <li><i class="fas fa-check text-success me-2"></i>Instant Generation</li>
                             <li><i class="fas fa-check text-success me-2"></i>QR Code Included</li>
                             <li><i class="fas fa-check text-success me-2"></i>PDF Download</li>
@@ -86,15 +83,14 @@
             
             <!-- Step 4 -->
             <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100 text-center border-0 shadow-sm">
+                <div class="card h-100 text-center border-0 shadow-sm step-card">
                     <div class="card-body">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-4" 
-                             style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto;">
-                            4
+                        <div class="step-number">
+                            <span class="step-icon">4</span>
                         </div>
-                        <h5 class="fw-bold">Start Saving</h5>
-                        <p class="text-muted">Visit any partner hospital, show your health card, and enjoy instant discounts on medical services.</p>
-                        <ul class="list-unstyled text-start">
+                        <h5 class="fw-bold step-title">Start Saving</h5>
+                        <p class="text-muted step-description">Visit any partner hospital, show your health card, and enjoy instant discounts on medical services.</p>
+                        <ul class="list-unstyled text-start step-features">
                             <li><i class="fas fa-check text-success me-2"></i>Find Hospitals</li>
                             <li><i class="fas fa-check text-success me-2"></i>Show Your Card</li>
                             <li><i class="fas fa-check text-success me-2"></i>Get Discounts</li>
@@ -109,15 +105,15 @@
 
 <!-- Detailed Process -->
 <section class="py-5 bg-light">
-    <div class="container">
+    <div class="content-wrapper">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Detailed Process</h2>
             <p class="text-muted">Everything you need to know about using your health card</p>
         </div>
         
-        <div class="row">
+        <div class="row mx-0">
             <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 process-card">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-user-plus text-primary me-2"></i>
@@ -136,7 +132,7 @@
             </div>
             
             <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 process-card">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-id-card text-primary me-2"></i>
@@ -155,7 +151,7 @@
             </div>
             
             <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 process-card">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-hospital text-primary me-2"></i>
@@ -174,7 +170,7 @@
             </div>
             
             <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 process-card">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-chart-line text-primary me-2"></i>
@@ -197,30 +193,30 @@
 
 <!-- Benefits Section -->
 <section class="py-5">
-    <div class="container">
+    <div class="content-wrapper">
         <div class="text-center mb-5">
             <h2 class="fw-bold">Why Choose Our Health Card?</h2>
             <p class="text-muted">Experience the benefits of digital healthcare</p>
         </div>
         
-        <div class="row">
+        <div class="row mx-0">
             <div class="col-md-4 mb-4">
-                <div class="text-center">
-                    <i class="fas fa-percentage fa-3x text-primary mb-3"></i>
+                <div class="benefit-item">
+                    <i class="fas fa-percentage fa-3x mb-3"></i>
                     <h5>Up to 50% Discount</h5>
                     <p class="text-muted">Save significantly on medical expenses with our partner hospitals</p>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
-                <div class="text-center">
-                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                <div class="benefit-item">
+                    <i class="fas fa-clock fa-3x mb-3"></i>
                     <h5>Instant Access</h5>
                     <p class="text-muted">Get your card immediately after verification - no waiting period</p>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
-                <div class="text-center">
-                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                <div class="benefit-item">
+                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
                     <h5>Secure & Private</h5>
                     <p class="text-muted">Your personal and medical data is encrypted and protected</p>
                 </div>
@@ -231,12 +227,14 @@
 
 <!-- CTA Section -->
 <section class="py-5 bg-primary text-white">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-3">Ready to Get Started?</h2>
-        <p class="lead mb-4">Join thousands of users who are already saving on healthcare</p>
-        <a href="{{ route('register') }}" class="btn btn-light btn-lg">
-            <i class="fas fa-id-card"></i> Register Now
-        </a>
+    <div class="content-wrapper">
+        <div class="text-center">
+            <h2 class="fw-bold mb-3">Ready to Get Started?</h2>
+            <p class="lead mb-4">Join thousands of users who are already saving on healthcare</p>
+            <a href="{{ route('register') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-id-card"></i> Register Now
+            </a>
+        </div>
     </div>
 </section>
 @endsection

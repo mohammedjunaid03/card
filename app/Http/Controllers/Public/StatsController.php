@@ -18,7 +18,7 @@ class StatsController extends Controller
     {
         // Get real statistics from database
         $users = User::where('status', 'active')->count();
-        $hospitals = Hospital::where('status', 'approved')->count();
+        $hospitals = Hospital::where('status', 'active')->count();
         $cards = HealthCard::where('status', 'active')->count();
         $savings = PatientAvailment::sum('discount_amount') ?? 0;
         

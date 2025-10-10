@@ -31,9 +31,5 @@ class Admin extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // Automatically hash password when set
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // Password mutator removed - passwords are hashed in seeders
 }

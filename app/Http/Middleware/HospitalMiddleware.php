@@ -10,18 +10,22 @@ class HospitalMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth('hospital')->check()) {
-            return redirect()->route('login')->with('error', 'Please login to access this page.');
-        }
+        // Allow access without authentication - hospital users can login without being authenticated
+        // If a hospital user is authenticated, check their status
+        if (auth('hospital')->check()) {
+            $hospital = auth('hospital')->user();
 
-        if (auth('hospital')->user()->status !== 'approved') {
-            auth('hospital')->logout();
-            return redirect()->route('login')->with('error', 'Your hospital account is not approved yet. Please contact support.');
+            if ($hospital->status !== 'active') {
+                auth('hospital')->logout();
+                return redirect()->route('login', ['role' => 'hospital'])
+                    ->with('error', 'Your hospital account is not approved yet. Please contact support.');
+            }
+
+            // Refresh session
+            $request->session()->regenerate();
         }
 
         return $next($request);

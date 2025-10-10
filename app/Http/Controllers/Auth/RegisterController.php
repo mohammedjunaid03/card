@@ -37,15 +37,30 @@ class RegisterController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'date_of_birth' => 'required|date|before:today',
+            'age' => 'required|integer|min:1|max:120',
             'gender' => 'required|in:Male,Female,Other',
             'address' => 'required|string',
             'blood_group' => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'email' => 'required|email|unique:users,email',
-            'mobile' => 'required|string|unique:users,mobile',
+            'email' => 'required|email',
+            'mobile' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
             'aadhaar' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'photo' => 'nullable|image|max:1024',
         ]);
+
+        // Custom validation: Check if same person already exists
+        $existingUser = User::where('email', $request->email)
+            ->where('mobile', $request->mobile)
+            ->where('name', $request->name)
+            ->where('date_of_birth', $request->date_of_birth)
+            ->first();
+
+        if ($existingUser) {
+            $validator->errors()->add('name', 'A user with the same name, email, phone number, and date of birth already exists.');
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -100,7 +115,7 @@ class RegisterController extends Controller
         // For now, we'll store it in session for testing
         session(['registration_otp' => $otp, 'user_id' => $user->id]);
 
-        return redirect()->route('otp.verify')
+        return redirect('/verify-otp')
             ->with('success', 'Registration successful. Please verify your email with the OTP sent to your email address.');
     }
 

@@ -55,7 +55,7 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'mobile' => 'required|digits:10|unique:users,mobile,' . $user->id,
+            'mobile' => 'required|digits:10',
             'address' => 'required|string|max:500',
             'blood_group' => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:1024',
@@ -114,7 +114,7 @@ class UserController extends Controller
     /** HOSPITALS */
     public function hospitals(Request $request)
     {
-        $query = Hospital::where('status', 'approved');
+        $query = Hospital::where('status', 'active');
 
         if ($request->filled('city')) {
             $query->where('city', $request->city);

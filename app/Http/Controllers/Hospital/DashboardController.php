@@ -16,6 +16,23 @@ class DashboardController extends Controller
     {
         $hospital = auth()->guard('hospital')->user();
         
+        // If no hospital is authenticated, show a basic dashboard or redirect to login
+        if (!$hospital) {
+            return view('hospital.dashboard', [
+                'hospital' => null,
+                'analytics' => [
+                    'total_patients' => 0,
+                    'total_availments' => 0,
+                    'total_services' => 0,
+                    'total_discount_given' => 0,
+                    'recent_availments' => 0,
+                    'monthly_availments' => 0,
+                    'service_wise_data' => collect()
+                ],
+                'recentPatients' => collect()
+            ]);
+        }
+        
         // Gather dashboard analytics
         $analytics = [
             'total_patients' => PatientAvailment::where('hospital_id', $hospital->id)

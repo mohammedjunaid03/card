@@ -54,11 +54,7 @@ class Hospital extends Authenticatable
         'contract_updated_at' => 'datetime',
     ];
 
-    // Mutator to hash password automatically
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // Password mutator removed - passwords are hashed in seeders
 
     /**
      * Relationships

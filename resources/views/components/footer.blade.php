@@ -1,5 +1,5 @@
 <footer>
-    <div class="container">
+    <div class="content-wrapper">
         <div class="row">
             <div class="col-md-4 mb-4">
                 <h5><i class="fas fa-heartbeat"></i> Health Card System</h5>

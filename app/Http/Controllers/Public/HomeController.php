@@ -29,7 +29,7 @@ class HomeController extends Controller
     
     public function hospitalNetwork(Request $request)
     {
-        $query = Hospital::where('status', 'approved')
+        $query = Hospital::where('status', 'active')
                          ->with('ownedServices');
 
         // Filter by city
@@ -57,7 +57,7 @@ class HomeController extends Controller
         $services = \App\Models\Service::distinct('category')->pluck('category');
         
         // Get all cities for filter dropdown
-        $cities = Hospital::where('status', 'approved')
+        $cities = Hospital::where('status', 'active')
                           ->distinct('city')
                           ->pluck('city')
                           ->filter()
@@ -126,7 +126,7 @@ class HomeController extends Controller
     {
         // Get real statistics from database
         $users = User::count();
-        $hospitals = Hospital::where('status', 'approved')->count();
+        $hospitals = Hospital::where('status', 'active')->count();
         $cards = HealthCard::count();
         $savings = PatientAvailment::sum('discount_amount') ?? 0;
         
@@ -161,7 +161,7 @@ class HomeController extends Controller
     
     public function hospitalDetails($id)
     {
-        $hospital = Hospital::where('status', 'approved')
+        $hospital = Hospital::where('status', 'active')
                            ->with('ownedServices')
                            ->findOrFail($id);
         

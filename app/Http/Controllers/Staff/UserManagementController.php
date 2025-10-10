@@ -27,8 +27,8 @@ class UserManagementController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'mobile' => 'required|string|unique:users',
+            'email' => 'required|email',
+            'mobile' => 'required|string',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female,other',
             'address' => 'required|string',
@@ -36,6 +36,19 @@ class UserManagementController extends Controller
             'password' => 'required|string|min:8',
             'aadhaar_file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
+
+        // Custom validation: Check if same person already exists
+        $existingUser = User::where('email', $request->email)
+            ->where('mobile', $request->mobile)
+            ->where('name', $request->name)
+            ->where('date_of_birth', $request->date_of_birth)
+            ->first();
+
+        if ($existingUser) {
+            return redirect()->back()
+                ->withErrors(['name' => 'A user with the same name, email, phone number, and date of birth already exists.'])
+                ->withInput();
+        }
 
         $user = User::create([
             'name' => $request->name,

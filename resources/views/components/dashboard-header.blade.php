@@ -97,9 +97,29 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard sidebar toggle script loaded');
+    
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
+    
+    // Check if elements exist
+    if (!sidebarToggle) {
+        console.log('Sidebar toggle button not found');
+        return;
+    }
+    
+    if (!sidebar) {
+        console.log('Sidebar element not found');
+        return;
+    }
+    
+    if (!content) {
+        console.log('Content element not found');
+        return;
+    }
+    
+    console.log('All sidebar elements found');
     
     // Check if sidebar state is stored in localStorage
     const sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
@@ -108,19 +128,29 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebar.classList.add('hidden');
         content.classList.add('full-width');
         sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        console.log('Sidebar initially hidden');
+    } else {
+        console.log('Sidebar initially visible');
     }
     
-    sidebarToggle.addEventListener('click', function() {
+    sidebarToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Sidebar toggle clicked');
+        
         const isHidden = sidebar.classList.contains('hidden');
         
         if (isHidden) {
             // Show sidebar
+            console.log('Showing sidebar');
             sidebar.classList.remove('hidden');
             content.classList.remove('full-width');
             sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
             localStorage.setItem('sidebarHidden', 'false');
         } else {
             // Hide sidebar
+            console.log('Hiding sidebar');
             sidebar.classList.add('hidden');
             content.classList.add('full-width');
             sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';

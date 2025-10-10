@@ -4,9 +4,9 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section bg-primary text-white py-4">
-    <div class="container">
-        <div class="row align-items-center">
+<section class="hero-section">
+    <div class="content-wrapper">
+        <div class="row align-items-center mx-0">
             <div class="col-lg-8">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -24,11 +24,11 @@
 
 <!-- Hospital Details Section -->
 <section class="py-5">
-    <div class="container">
-        <div class="row">
+    <div class="content-wrapper">
+        <div class="row mx-0">
             <!-- Hospital Info Card -->
             <div class="col-lg-4 mb-4">
-                <div class="card shadow">
+                <div class="card shadow hospital-info-card">
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <img src="{{ $hospital->logo_path ? asset('storage/' . $hospital->logo_path) : asset('images/hospital-logo-placeholder.png') }}" 
@@ -68,7 +68,7 @@
             
             <!-- Services and Benefits Tabs -->
             <div class="col-lg-8">
-                <div class="card shadow">
+                <div class="card shadow hospital-details-card">
                     <div class="card-header bg-white">
                         <ul class="nav nav-tabs card-header-tabs" id="hospitalTabs" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -280,15 +280,17 @@
 
 <!-- CTA Section -->
 <section class="py-5 bg-light">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-3">Ready to Get Your Health Card?</h2>
-        <p class="lead mb-4">Join thousands of patients who are already saving on healthcare costs</p>
-        <a href="{{ route('register') }}" class="btn btn-primary btn-lg me-3">
-            <i class="fas fa-id-card"></i> Get Health Card Now
-        </a>
-        <a href="{{ route('hospital-network') }}" class="btn btn-outline-primary btn-lg">
-            <i class="fas fa-hospital"></i> Browse More Hospitals
-        </a>
+    <div class="content-wrapper">
+        <div class="text-center">
+            <h2 class="fw-bold mb-3">Ready to Get Your Health Card?</h2>
+            <p class="lead mb-4">Join thousands of patients who are already saving on healthcare costs</p>
+            <a href="{{ route('register') }}" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-id-card"></i> Get Health Card Now
+            </a>
+            <a href="{{ route('hospital-network') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-hospital"></i> Browse More Hospitals
+            </a>
+        </div>
     </div>
 </section>
 @endsection

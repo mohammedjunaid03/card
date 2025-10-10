@@ -188,11 +188,6 @@
                 @endif
             </div>
             
-            <div class="text-center">
-                <a href="{{ route('password.request') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Forgot Password
-                </a>
-            </div>
         </div>
         </div>
     </div>
@@ -225,6 +220,7 @@
         document.getElementById('otp').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
+        
     </script>
 </body>
 </html>

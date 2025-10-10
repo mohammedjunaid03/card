@@ -1,337 +1,294 @@
 # Health Card Management System
 
-A comprehensive digital health card management system built with Laravel, providing healthcare access and discounts through a network of partner hospitals.
+A comprehensive Health Card Management System built with Laravel 12, featuring user registration, hospital management, staff administration, and real-time analytics.
 
-## 🏥 Project Overview
+## Features
 
-The Health Card Management System is a full-stack web application that digitizes healthcare card issuance and usage. It serves users (patients), hospitals, staff, and admins, providing a structured way to manage health cards, hospital networks, and discounts for medical services.
+### 🏥 Core Modules
+- **User Module**: Registration, health card generation, discount tracking
+- **Hospital Module**: Service management, patient verification, analytics
+- **Staff Module**: User registration, document verification, health card approval
+- **Admin Module**: Complete system management, analytics, reporting
 
-## ✨ Key Features
+### 🔐 Security Features
+- Multi-guard authentication (User, Hospital, Staff, Admin)
+- Role-based access control
+- OTP verification for registration
+- Audit logging for all critical actions
+- CSRF protection and secure file uploads
 
-### 🌐 Public Website
-- **Modern Landing Page** with hero section, statistics, and features
-- **About Us** page with company information and values
-- **How It Works** step-by-step guide
-- **Hospital Network** page with search and filtering
-- **FAQs** comprehensive question and answer section
-- **Contact Us** form with support information
+### 📊 Analytics & Reporting
+- Real-time dashboard analytics
+- Exportable reports (CSV, Excel, PDF)
+- Hospital performance metrics
+- User engagement tracking
+- Financial impact analysis
 
-### 👤 User Module
-- **Registration** with OTP verification
-- **Digital Health Card** generation with QR code
-- **Dashboard** with health card access and download
-- **Discount History** tracking
-- **Hospital Search** with filters
-- **Profile Management** with secure document uploads
-- **Notifications** system
-- **Support Tickets** for assistance
+## Quick Start
 
-### 🏥 Hospital Module
-- **Hospital Registration** and approval system
-- **Service Management** with discount configuration
-- **Card Verification** via QR code scanning
-- **Patient Availment** tracking
-- **Analytics Dashboard** with insights
-- **Reports** generation
-
-### 👨‍💼 Staff Module
-- **User Registration** assistance
-- **Hospital Registration** support
-- **Document Verification** workflow
-- **Limited Admin Rights** for support tasks
-
-### 🔧 Admin Module
-- **Super Admin Dashboard** with full system control
-- **User Management** with approval workflows
-- **Hospital Management** and approval system
-- **Staff Management** and role assignment
-- **Analytics** with charts and reports
-- **Audit Logs** for security tracking
-- **Notification System** for announcements
-
-## 🛠️ Technology Stack
-
-### Backend
-- **PHP 8.2+** with Laravel 12.x framework
-- **MySQL 8.x** database
-- **Laravel Sanctum** for API authentication
-- **DomPDF** for PDF generation
-- **Simple QR Code** for QR code generation
-- **Laravel Excel** for data export
-
-### Frontend
-- **HTML5, CSS3, JavaScript** (vanilla)
-- **Bootstrap 5.3** for responsive design
-- **Font Awesome** for icons
-- **Chart.js** for analytics visualization
-- **jQuery** for enhanced interactions
-
-### Security & Features
-- **bcrypt** password hashing
-- **CSRF protection** on all forms
-- **Role-based access control** (RBAC)
-- **OTP verification** for registration
-- **File encryption** for sensitive documents
-- **Audit logging** for all actions
-- **Session-based authentication**
-
-## 📋 Prerequisites
-
+### Prerequisites
 - PHP 8.2 or higher
 - Composer
-- MySQL 8.0 or higher
-- Node.js and NPM (for asset compilation)
-- Web server (Apache/Nginx)
+- SQLite (included) or MySQL
+- Web server (Apache/Nginx) or PHP built-in server
 
-## 🚀 Installation
+### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/health-card-system.git
-   cd health-card-system
-   ```
+#### Option 1: Using the Start Script (Recommended)
+```bash
+# For Windows
+start.bat
 
-2. **Install PHP dependencies**
-   ```bash
-   composer install
-   ```
-
-3. **Install Node.js dependencies**
-   ```bash
-   npm install
-   ```
-
-4. **Environment setup**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-5. **Database configuration**
-   - Create a MySQL database
-   - Update `.env` file with database credentials:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=health_card_system
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
-   ```
-
-6. **Run migrations and seeders**
-   ```bash
-   php artisan migrate --seed
-   ```
-
-7. **Create storage symlink**
-   ```bash
-   php artisan storage:link
-   ```
-
-8. **Compile assets**
-   ```bash
-   npm run build
-   ```
-
-9. **Start the development server**
-   ```bash
-   php artisan serve
-   ```
-
-## 🔐 Default Login Credentials
-
-After running the seeders, you can use these default credentials:
-
-### Admin (Single Admin System)
-- **Email:** admin@gmail.com
-- **Password:** admin123
-- **Role:** Super Admin (manages all system functions)
-
-### Staff
-- **Email:** john.smith@gmail.com
-- **Password:** staff123
-
-### Hospital
-- **Email:** info@apollohospitals.com
-- **Password:** apollo123
-
-### Test User
-- **Email:** test@gmail.com
-- **Password:** password
-
-## 📁 Project Structure
-
-```
-health-card-system/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Admin/          # Admin module controllers
-│   │   │   ├── Hospital/       # Hospital module controllers
-│   │   │   ├── Staff/          # Staff module controllers
-│   │   │   ├── User/           # User module controllers
-│   │   │   ├── Auth/           # Authentication controllers
-│   │   │   └── Public/         # Public page controllers
-│   │   └── Middleware/         # Custom middleware
-│   ├── Models/                 # Eloquent models
-│   ├── Services/               # Business logic services
-│   └── Jobs/                   # Background jobs
-├── database/
-│   ├── migrations/             # Database migrations
-│   └── seeders/                # Database seeders
-├── resources/
-│   ├── views/                  # Blade templates
-│   │   ├── admin/              # Admin views
-│   │   ├── hospital/           # Hospital views
-│   │   ├── staff/              # Staff views
-│   │   ├── user/               # User views
-│   │   ├── auth/               # Authentication views
-│   │   ├── public/             # Public pages
-│   │   ├── components/         # Reusable components
-│   │   └── layouts/            # Layout templates
-│   ├── css/                    # Custom CSS
-│   └── js/                     # Custom JavaScript
-├── public/
-│   ├── css/                    # Compiled CSS
-│   ├── js/                     # Compiled JavaScript
-│   └── storage/                # File storage
-└── routes/
-    ├── web.php                 # Web routes
-    └── api.php                 # API routes
+# For Linux/Mac
+chmod +x start.sh
+./start.sh
 ```
 
-## 🔧 Configuration
+#### Option 2: Manual Setup
+```bash
+# Clone the repository
+git clone <repository-url>
+cd health-card-system
 
-### Mail Configuration
-Update your `.env` file for email functionality:
+# Install dependencies
+composer install
+
+# Create environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+
+# Run migrations
+php artisan migrate
+
+# Seed database with sample data
+php artisan db:seed
+
+# Start the development server
+php artisan serve
+```
+
+### Access the Application
+- **URL**: http://127.0.0.1:8000
+- **Admin Login**: admin@gmail.com / admin123
+- **Staff Login**: john.smith@gmail.com / staff123
+- **Hospital Login**: apollo.hospital@gmail.com / apollo123
+
+### Test Login Page
+Visit `http://127.0.0.1:8000/test-login.html` to easily test all login types with pre-filled credentials.
+
+## System Architecture
+
+### Database Structure
+- **Users**: Patient information and health card data
+- **Hospitals**: Hospital profiles and service offerings
+- **Health Cards**: Generated cards with QR codes
+- **Patient Availments**: Service usage and discount tracking
+- **Audit Logs**: Complete activity tracking
+- **Notifications**: System-wide communication
+
+### Authentication Guards
+- `web`: Regular users (patients)
+- `hospital`: Hospital staff
+- `staff`: System staff
+- `admin`: System administrators
+
+## Key Features
+
+### User Registration & Health Card
+1. **Registration Process**:
+   - Personal information collection
+   - Document upload (Aadhaar, photo)
+   - OTP verification
+   - Automatic health card generation
+
+2. **Health Card Features**:
+   - PDF generation with QR code
+   - Digital download
+   - QR code verification at hospitals
+   - Validity tracking
+
+### Hospital Management
+1. **Service Management**:
+   - Add/edit medical services
+   - Set discount percentages
+   - Manage service categories
+
+2. **Patient Verification**:
+   - QR code scanning
+   - Card ID verification
+   - Real-time validation
+
+3. **Availment Tracking**:
+   - Record patient visits
+   - Track services used
+   - Calculate discounts applied
+
+### Admin Dashboard
+1. **Analytics**:
+   - Total cards issued
+   - Hospital registrations
+   - Service usage statistics
+   - Financial impact reports
+
+2. **Management**:
+   - User approval/rejection
+   - Hospital approval
+   - Staff management
+   - System settings
+
+## API Endpoints
+
+### Public Routes
+- `GET /` - Homepage
+- `GET /about` - About page
+- `GET /hospital-network` - Hospital listings
+- `POST /contact` - Contact form submission
+
+### Authentication Routes
+- `GET /login` - Login form
+- `POST /login` - Login processing
+- `GET /register` - Registration form
+- `POST /register` - Registration processing
+- `GET /verify-otp` - OTP verification
+
+### Protected Routes
+- `/user/*` - User dashboard and features
+- `/hospital/*` - Hospital management
+- `/staff/*` - Staff operations
+- `/admin/*` - Admin panel
+
+## Configuration
+
+### Environment Variables
+Key configuration options in `.env`:
+
 ```env
-MAIL_MAILER=smtp
-MAIL_HOST=your-smtp-host
-MAIL_PORT=587
-MAIL_USERNAME=your-email
-MAIL_PASSWORD=your-password
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@healthcardsystem.com
-MAIL_FROM_NAME="Health Card System"
+APP_NAME="Health Card Management System"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+
+MAIL_MAILER=log
 ```
 
 ### File Storage
-The system uses Laravel's file storage for:
-- User photos and Aadhaar documents
-- Health card PDFs and QR codes
-- Hospital logos and documents
+- **Public Files**: `storage/app/public/`
+- **Private Files**: `storage/app/private/`
+- **Health Cards**: `storage/app/health-cards/`
 
-## 📊 Database Schema
+## Development
 
-### Core Tables
-- `users` - User accounts and profiles
-- `hospitals` - Hospital information and credentials
-- `staff` - Staff member accounts
-- `admins` - Administrator accounts
-- `health_cards` - Generated health cards
-- `services` - Available medical services
-- `hospital_services` - Hospital-specific services and discounts
-- `patient_availments` - Service usage records
-- `audit_logs` - System activity logs
-- `notifications` - User notifications
-- `support_tickets` - Customer support system
+### Code Structure
+```
+app/
+├── Http/Controllers/
+│   ├── Admin/          # Admin functionality
+│   ├── Auth/           # Authentication
+│   ├── Hospital/       # Hospital management
+│   ├── Public/         # Public pages
+│   ├── Staff/          # Staff operations
+│   └── User/           # User features
+├── Models/             # Eloquent models
+├── Services/           # Business logic
+└── Mail/              # Email templates
 
-## 🔒 Security Features
+resources/views/
+├── admin/             # Admin views
+├── auth/              # Authentication views
+├── hospital/          # Hospital views
+├── public/            # Public pages
+├── staff/             # Staff views
+└── user/              # User views
+```
 
-- **Password Hashing:** All passwords are hashed using bcrypt
-- **CSRF Protection:** All forms include CSRF tokens
-- **File Encryption:** Sensitive documents are encrypted
-- **Role-based Access:** Different access levels for different user types
-- **Audit Logging:** All critical actions are logged
-- **Session Security:** Secure session management
-- **Input Validation:** All user inputs are validated and sanitized
+### Adding New Features
+1. Create migration: `php artisan make:migration create_feature_table`
+2. Create model: `php artisan make:model Feature`
+3. Create controller: `php artisan make:controller FeatureController`
+4. Add routes in `routes/web.php`
+5. Create views in `resources/views/`
 
-## 📱 API Endpoints
+## Testing
 
-The system includes RESTful API endpoints for mobile app integration:
-
-### Authentication
-- `POST /api/v1/register` - User registration
-- `POST /api/v1/login` - User login
-- `POST /api/v1/logout` - User logout
-- `POST /api/v1/verify-otp` - OTP verification
-
-### User Management
-- `GET /api/v1/user` - Get user profile
-- `PUT /api/v1/user` - Update user profile
-- `GET /api/v1/health-card` - Get health card
-- `GET /api/v1/hospitals` - List hospitals
-- `GET /api/v1/services` - List services
-
-## 🧪 Testing
-
-Run the test suite:
+### Running Tests
 ```bash
+# Run all tests
 php artisan test
+
+# Run specific test
+php artisan test --filter=FeatureTest
 ```
 
-## 📈 Performance Optimization
+### Test Coverage
+- Unit tests for models and services
+- Feature tests for API endpoints
+- Browser tests for user interactions
 
-- **Database Indexing:** Optimized database queries
-- **Caching:** Frequently accessed data is cached
-- **Image Optimization:** Automatic image compression
-- **Lazy Loading:** Images and content are loaded on demand
-- **CDN Ready:** Static assets can be served via CDN
+## Deployment
 
-## 🚀 Deployment
+### Production Setup
+1. Set `APP_ENV=production` in `.env`
+2. Set `APP_DEBUG=false`
+3. Configure proper database connection
+4. Set up SSL certificate
+5. Configure web server (Apache/Nginx)
+6. Set up queue workers for background jobs
 
-### Production Deployment
-1. Set up a production server with PHP 8.2+, MySQL, and web server
-2. Clone the repository and install dependencies
-3. Configure environment variables for production
-4. Run migrations and seeders
-5. Set up SSL certificate
-6. Configure web server virtual host
-7. Set up cron jobs for scheduled tasks
+### Performance Optimization
+- Enable OPcache
+- Use Redis for caching
+- Configure database indexing
+- Optimize images and assets
+- Use CDN for static files
 
-### Docker Deployment
-```bash
-# Build and run with Docker Compose
-docker-compose up -d
-```
+## Troubleshooting
 
-## 🤝 Contributing
+### Common Issues
+
+1. **Database Connection Error**:
+   - Check database configuration in `.env`
+   - Ensure database file exists and is writable
+   - Run `php artisan migrate:fresh`
+
+2. **File Upload Issues**:
+   - Check storage directory permissions
+   - Verify file size limits in PHP configuration
+   - Ensure proper file type validation
+
+3. **Authentication Problems**:
+   - Clear application cache: `php artisan cache:clear`
+   - Regenerate application key: `php artisan key:generate`
+   - Check session configuration
+
+### Logs
+- Application logs: `storage/logs/laravel.log`
+- Web server logs: Check your web server configuration
+- Database logs: Enable query logging in development
+
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
-## 🆘 Support
+## Support
 
 For support and questions:
-- **Email:** support@healthcardsystem.com
-- **Phone:** +91-800-123-4567
-- **Documentation:** [Wiki](https://github.com/your-username/health-card-system/wiki)
-
-## 🔮 Future Enhancements
-
-- **Mobile App** (React Native/Flutter)
-- **AI-powered Health Insights**
-- **Telemedicine Integration**
-- **Blockchain-based Card Verification**
-- **Multi-language Support**
-- **Advanced Analytics Dashboard**
-- **Integration with Government Health Schemes**
-
-## 🙏 Acknowledgments
-
-- Laravel framework and community
-- Bootstrap for UI components
-- Font Awesome for icons
-- All contributors and testers
+- Create an issue in the repository
+- Check the documentation
+- Review the troubleshooting section
 
 ---
 
-**Made with ❤️ for better healthcare access**
+**Health Card Management System** - Streamlining healthcare access through digital innovation.

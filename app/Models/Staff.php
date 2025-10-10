@@ -29,11 +29,7 @@ class Staff extends Authenticatable
         'remember_token',
     ];
 
-    // Mutators
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // Password mutator removed - passwords are hashed in seeders
 
     // Relationships
     public function hospital()

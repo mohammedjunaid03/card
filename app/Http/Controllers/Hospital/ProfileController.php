@@ -11,12 +11,25 @@ class ProfileController extends Controller
     public function show()
     {
         $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to view your profile.');
+        }
+        
         return view('hospital.profile.show', compact('hospital'));
     }
 
     public function update(Request $request)
     {
         $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to update your profile.');
+        }
         
         $request->validate([
             'name' => 'required|string|max:255',

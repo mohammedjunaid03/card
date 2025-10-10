@@ -14,12 +14,14 @@ class Notification extends Model
         'recipient_id',
         'title',
         'message',
+        'data',
         'type',
         'is_read',
     ];
 
     protected $casts = [
         'is_read' => 'boolean',
+        'data' => 'array',
     ];
 
     protected $attributes = [

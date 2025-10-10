@@ -71,7 +71,7 @@ class AdminReport extends Controller
 
         // Monthly trends
         $monthlyTrends = PatientAvailment::selectRaw('
-                DATE_FORMAT(created_at, "%Y-%m") as month,
+                strftime("%Y-%m", created_at) as month,
                 COUNT(*) as availments_count,
                 SUM(discount_amount) as total_discount,
                 AVG(discount_amount) as avg_discount
@@ -96,7 +96,7 @@ class AdminReport extends Controller
             ->get();
 
         // Additional data for charts and tables
-        $monthlyUsers = User::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+        $monthlyUsers = User::selectRaw('strftime("%m", created_at) as month, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
             ->orderBy('month')
@@ -108,7 +108,7 @@ class AdminReport extends Controller
                 ];
             });
 
-        $monthlyAvailmentsData = PatientAvailment::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+        $monthlyAvailmentsData = PatientAvailment::selectRaw('strftime("%m", created_at) as month, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
             ->orderBy('month')

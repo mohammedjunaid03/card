@@ -24,12 +24,26 @@ class AuthController extends Controller
             'gender' => 'required|in:Male,Female,Other',
             'address' => 'required|string',
             'blood_group' => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'email' => 'required|email|unique:users,email',
-            'mobile' => 'required|string|unique:users,mobile',
+            'email' => 'required|email',
+            'mobile' => 'required|string',
             'password' => 'required|string|min:6|confirmed',
             'aadhaar' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'photo' => 'nullable|image|max:1024',
         ]);
+
+        // Custom validation: Check if same person already exists
+        $existingUser = User::where('email', $request->email)
+            ->where('mobile', $request->mobile)
+            ->where('name', $request->name)
+            ->where('date_of_birth', $request->dob)
+            ->first();
+
+        if ($existingUser) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'A user with the same name, email, phone number, and date of birth already exists.'
+            ], 422);
+        }
 
         if ($validator->fails()) {
             return response()->json([
@@ -156,7 +170,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Invalid credentials.'
+            'message' => 'Invalid username or password.'
         ], 401);
     }
 

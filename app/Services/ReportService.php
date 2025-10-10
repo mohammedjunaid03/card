@@ -17,7 +17,7 @@ class ReportService
         return [
             'total_users' => User::count(),
             'active_users' => User::where('status', 'active')->count(),
-            'total_hospitals' => Hospital::where('status', 'approved')->count(),
+            'total_hospitals' => Hospital::where('status', 'active')->count(),
             'total_cards_issued' => HealthCard::count(),
             'active_cards' => HealthCard::where('status', 'active')->count(),
             'total_availments' => PatientAvailment::count(),
@@ -30,7 +30,7 @@ class ReportService
         $startDate = Carbon::now()->subMonths($months);
 
         $userTrends = User::select(
-            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+            DB::raw('strftime("%Y-%m", created_at) as month'),
             DB::raw('COUNT(*) as count')
         )
         ->where('created_at', '>=', $startDate)
@@ -39,7 +39,7 @@ class ReportService
         ->get();
 
         $cardTrends = HealthCard::select(
-            DB::raw('DATE_FORMAT(issued_date, "%Y-%m") as month'),
+            DB::raw('strftime("%Y-%m", issued_date) as month'),
             DB::raw('COUNT(*) as count')
         )
         ->where('issued_date', '>=', $startDate)

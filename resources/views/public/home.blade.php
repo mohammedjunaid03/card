@@ -5,12 +5,12 @@
 @section('content')
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
+    <div class="content-wrapper">
+        <div class="row align-items-center mx-0">
             <div class="col-lg-6">
                 <h1 class="display-4 fw-bold">Your Health, Our Priority</h1>
                 <p class="lead">Get instant access to quality healthcare with exclusive discounts at partner hospitals</p>
-                <div class="mt-4">
+                <div class="mt-3">
                     <a href="{{ route('register') }}" class="btn btn-light btn-lg me-3">
                         <i class="fas fa-id-card"></i> Get Your Health Card
                     </a>
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="{{ asset('images/hero-illustration.svg') }}" class="img-fluid" alt="Health Card">
+                <img src="{{ asset('images/hero-illustration.svg') }}" class="img-fluid" alt="Health Card" style="max-height: 300px;">
             </div>
         </div>
     </div>
@@ -28,8 +28,8 @@
 
 <!-- Stats Section -->
 <section class="stats-section">
-    <div class="container">
-        <div class="row text-center">
+    <div class="content-wrapper">
+        <div class="row text-center mx-0">
             <div class="col-md-3 stat-box">
                 <i class="fas fa-users"></i>
                 <h3 id="users-count">0</h3>
@@ -55,14 +55,14 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
+<section class="py-4 bg-light">
+    <div class="content-wrapper">
+        <div class="text-center mb-4">
             <h2 class="fw-bold">Why Choose Health Card?</h2>
             <p class="text-muted">Experience hassle-free healthcare access with amazing benefits</p>
         </div>
         
-        <div class="row">
+        <div class="row mx-0">
             <div class="col-md-4 mb-4">
                 <div class="card h-100 text-center">
                     <div class="card-body">
@@ -127,14 +127,14 @@
 </section>
 
 <!-- How It Works Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
+<section class="py-4">
+    <div class="content-wrapper">
+        <div class="text-center mb-4">
             <h2 class="fw-bold">How It Works</h2>
             <p class="text-muted">Get started in 4 simple steps</p>
         </div>
         
-        <div class="row">
+        <div class="row mx-0">
             <div class="col-md-3 text-center mb-4">
                 <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" 
                      style="width: 80px; height: 80px; font-size: 2rem;">
@@ -179,13 +179,15 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-3">Ready to Save on Healthcare?</h2>
-        <p class="lead mb-4">Join thousands of satisfied users and start your healthcare journey today</p>
-        <a href="{{ route('register') }}" class="btn btn-light btn-lg">
-            <i class="fas fa-id-card"></i> Get Your Health Card Now
-        </a>
+<section class="py-4 bg-primary text-white">
+    <div class="content-wrapper">
+        <div class="text-center">
+            <h2 class="fw-bold mb-3">Ready to Save on Healthcare?</h2>
+            <p class="lead mb-3">Join thousands of satisfied users and start your healthcare journey today</p>
+            <a href="{{ route('register') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-id-card"></i> Get Your Health Card Now
+            </a>
+        </div>
     </div>
 </section>
 @endsection

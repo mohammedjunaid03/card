@@ -1,53 +1,46 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
+<nav class="navbar navbar-expand-lg modern-navbar shadow-sm fixed-top">
+    <div class="container-fluid px-3 px-md-4">
+        <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-            <!-- LOGO PLACEHOLDER - Replace kcc-logo.svg with your logo file -->
-            <img src="{{ asset('logo.png') }}" alt="KCC HealthCard" height="30" class="me-2" id="navbar-logo">
-            <span class="brand-text"> HealthCard</span>
+            <img src="{{ asset('logo.png') }}" alt="KCC HealthCard" height="38" class="navbar-logo me-2">
+            <span class="brand-text fw-bold">HealthCard</span>
         </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="fas fa-bars text-primary fs-4"></i>
         </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('home') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('about') }}">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('how-it-works') }}">How It Works</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('hospital-network') }}">Hospitals</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('contact') }}">Contact</a>
-                </li>
-                
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav align-items-lg-center">
+                <li class="nav-item"><a class="nav-link modern-nav-link" href="{{ route('home') }}"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link modern-nav-link" href="{{ route('about') }}"><i class="fas fa-info-circle me-1"></i>About</a></li>
+                <li class="nav-item"><a class="nav-link modern-nav-link" href="{{ route('how-it-works') }}"><i class="fas fa-cogs me-1"></i>How It Works</a></li>
+                <li class="nav-item"><a class="nav-link modern-nav-link" href="{{ route('hospital-network') }}"><i class="fas fa-hospital me-1"></i>Hospitals</a></li>
+                <li class="nav-item"><a class="nav-link modern-nav-link" href="{{ route('contact') }}"><i class="fas fa-envelope me-1"></i>Contact</a></li>
+
                 @guest
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-light text-primary ms-2" href="{{ route('register') }}">
-                            Get Health Card
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="btn modern-cta-btn px-3 py-2 fw-semibold" href="{{ route('register') }}">
+                            <i class="fas fa-id-card me-2"></i>Get Health Card
                         </a>
                     </li>
                 @else
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                           data-bs-toggle="dropdown">
-                            {{ auth()->user()->name }}
+                    <li class="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link dropdown-toggle modern-nav-link d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-2 fs-5"></i>{{ auth()->user()->name }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('user.dashboard') }}">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
+                        <ul class="dropdown-menu modern-dropdown shadow-sm border-0">
+                            <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ route('user.profile') }}"><i class="fas fa-user-edit me-2 text-primary"></i>Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">Logout</button>
+                                    <button type="submit" class="dropdown-item text-danger fw-semibold">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
                                 </form>
                             </li>
                         </ul>

@@ -12,7 +12,7 @@ class HospitalSearchController extends Controller
     public function index(Request $request)
     {
         $query = Hospital::with(['services'])
-            ->where('status', 'approved');
+            ->where('status', 'active');
 
         // Filter by location
         if ($request->filled('location')) {

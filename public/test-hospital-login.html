@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Hospital Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { padding: 10px; width: 100%; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .step { background: #e2e3e5; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .credentials { background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Hospital Login Test</h1>
+        
+        <div class="credentials">
+            <h3>📋 Test Credentials</h3>
+            <p><strong>Apollo Hospital:</strong></p>
+            <ul>
+                <li>Email: apollo.hospital@gmail.com</li>
+                <li>Mobile: 9876511111</li>
+                <li>Password: apollo123</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>🔍 Debug Steps:</h3>
+            <ol>
+                <li>Open Browser DevTools (F12)</li>
+                <li>Go to Console tab to see JavaScript errors</li>
+                <li>Go to Network tab to see HTTP requests</li>
+                <li>Click "Test Login" below</li>
+                <li>Check the results and logs</li>
+            </ol>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="user_type">User Type:</label>
+                <input type="text" id="user_type" name="user_type" value="hospital" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="login">Email or Mobile:</label>
+                <input type="text" id="login" name="login" value="apollo.hospital@gmail.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" value="apollo123">
+            </div>
+            
+            <button type="submit">🧪 Test Login</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        <div id="log" class="log" style="display: none;"></div>
+    </div>
+    
+    <script>
+        let logMessages = [];
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logMessages.push(`[${timestamp}] ${message}`);
+            updateLog();
+            console.log(message);
+        }
+        
+        function updateLog() {
+            const logDiv = document.getElementById('log');
+            logDiv.style.display = 'block';
+            logDiv.innerHTML = logMessages.join('\n');
+        }
+        
+        function showResult(type, title, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `<h3>${title}</h3>${content}`;
+        }
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            log('🚀 Starting login test...');
+            
+            const formData = new FormData(this);
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                log('📡 Getting CSRF token...');
+                
+                // First get CSRF token
+                const csrfResponse = await fetch('/login?role=hospital');
+                log(`CSRF response status: ${csrfResponse.status}`);
+                
+                if (!csrfResponse.ok) {
+                    throw new Error(`Failed to get CSRF token: ${csrfResponse.status}`);
+                }
+                
+                const csrfText = await csrfResponse.text();
+                const csrfMatch = csrfText.match(/name="csrf-token" content="([^"]+)"/);
+                const csrfToken = csrfMatch ? csrfMatch[1] : '';
+                
+                if (!csrfToken) {
+                    throw new Error('CSRF token not found in response');
+                }
+                
+                log(`✅ CSRF token obtained: ${csrfToken.substring(0, 20)}...`);
+                
+                // Add CSRF token to form data
+                formData.append('_token', csrfToken);
+                
+                log('📤 Submitting login request...');
+                
+                // Submit login
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    redirect: 'manual' // Don't follow redirects automatically
+                });
+                
+                log(`📥 Login response status: ${response.status}`);
+                log(`📥 Response URL: ${response.url}`);
+                
+                let responseText = '';
+                try {
+                    responseText = await response.text();
+                    log(`📥 Response body length: ${responseText.length} characters`);
+                } catch (e) {
+                    log(`⚠️ Could not read response body: ${e.message}`);
+                }
+                
+                if (response.status === 302) {
+                    const location = response.headers.get('Location');
+                    log(`🔄 Redirect detected to: ${location}`);
+                    
+                    if (location && location.includes('/hospital/dashboard')) {
+                        showResult('success', '✅ Login Successful!', `
+                            <p><strong>Status:</strong> ${response.status} (Redirect)</p>
+                            <p><strong>Redirect URL:</strong> ${location}</p>
+                            <p><strong>Result:</strong> Hospital login is working correctly!</p>
+                            <p><a href="${location}" target="_blank">🎯 Go to Hospital Dashboard</a></p>
+                        `);
+                    } else {
+                        showResult('error', '❌ Unexpected Redirect', `
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Redirect URL:</strong> ${location}</p>
+                            <p><strong>Issue:</strong> Redirected to unexpected location</p>
+                        `);
+                    }
+                } else if (response.status === 200) {
+                    showResult('error', '❌ Login Failed', `
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Response:</strong> ${responseText.substring(0, 500)}...</p>
+                        <p><strong>Issue:</strong> Server returned 200 instead of redirect</p>
+                    `);
+                } else {
+                    showResult('error', '❌ Server Error', `
+                        <p><strong>Status:</strong> ${response.status}</p>
+                        <p><strong>Response:</strong> ${responseText.substring(0, 500)}...</p>
+                    `);
+                }
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                showResult('error', '❌ Network Error', `
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Possible causes:</strong></p>
+                    <ul>
+                        <li>Server is not running</li>
+                        <li>Network connection issue</li>
+                        <li>CORS policy blocking the request</li>
+                    </ul>
+                `);
+            }
+        });
+        
+        // Initial log
+        log('🔧 Hospital Login Test Page Loaded');
+        log(`🌐 Current URL: ${window.location.href}`);
+        log('📋 Ready to test hospital login...');
+    </script>
+</body>
+</html>

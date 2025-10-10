@@ -293,6 +293,7 @@
             // Add active class to clicked tab
             event.target.classList.add('active');
         }
+        
     </script>
 </body>
 </html>

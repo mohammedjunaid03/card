@@ -20,7 +20,7 @@ class AdminSeeder extends Seeder
                 'name' => 'System Administrator',
                 'email' => 'admin@gmail.com',
                 'mobile' => '9876543210',
-                'password' => 'admin123', // Plain text, will be hashed by model mutator
+                'password' => Hash::make('admin123'), // Explicitly hash the password
                 'role' => 'super_admin',
                 'status' => 'active',
                 'email_verified_at' => now(),

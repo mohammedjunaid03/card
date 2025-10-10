@@ -41,7 +41,7 @@ class DashboardController extends Controller
         
         // Get monthly savings data for charts (last 6 months)
         $monthlySavings = $user->availments()
-            ->selectRaw('DATE_FORMAT(availment_date, "%Y-%m") as month, SUM(discount_amount) as savings')
+            ->selectRaw('strftime("%Y-%m", availment_date) as month, SUM(discount_amount) as savings')
             ->where('availment_date', '>=', now()->subMonths(6))
             ->groupBy('month')
             ->orderBy('month')

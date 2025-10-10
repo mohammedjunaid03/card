@@ -10,7 +10,7 @@ class HospitalController extends Controller
 {
     public function list(Request $request)
     {
-        $hospitals = Hospital::where('status', 'approved')->get();
+        $hospitals = Hospital::where('status', 'active')->get();
         return response()->json(['hospitals' => $hospitals]);
     }
 

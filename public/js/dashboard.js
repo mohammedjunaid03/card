@@ -17,37 +17,59 @@ document.addEventListener('DOMContentLoaded', function() {
  * Sidebar Toggle Functionality
  */
 function initializeSidebarToggle() {
+    console.log('Initializing sidebar toggle...');
+    
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
     
-    if (!sidebarToggle || !sidebar || !content) return;
+    console.log('Sidebar toggle button:', sidebarToggle);
+    console.log('Sidebar element:', sidebar);
+    console.log('Content element:', content);
+    
+    if (!sidebarToggle || !sidebar || !content) {
+        console.log('Missing elements for sidebar toggle');
+        return;
+    }
     
     // Check if sidebar state is stored in localStorage
     const sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
+    console.log('Sidebar initially hidden:', sidebarHidden);
     
     if (sidebarHidden) {
         sidebar.classList.add('hidden');
         content.classList.add('full-width');
         updateToggleIcon(sidebarToggle, true);
+        console.log('Sidebar set to hidden state');
     }
     
-    sidebarToggle.addEventListener('click', function() {
+    sidebarToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Sidebar toggle clicked');
+        
         const isHidden = sidebar.classList.contains('hidden');
+        console.log('Current sidebar state - hidden:', isHidden);
         
         if (isHidden) {
             // Show sidebar
+            console.log('Showing sidebar');
             sidebar.classList.remove('hidden');
             content.classList.remove('full-width');
             updateToggleIcon(sidebarToggle, false);
             localStorage.setItem('sidebarHidden', 'false');
         } else {
             // Hide sidebar
+            console.log('Hiding sidebar');
             sidebar.classList.add('hidden');
             content.classList.add('full-width');
             updateToggleIcon(sidebarToggle, true);
             localStorage.setItem('sidebarHidden', 'true');
         }
+        
+        console.log('Sidebar classes after toggle:', sidebar.className);
+        console.log('Content classes after toggle:', content.className);
     });
 }
 
@@ -56,7 +78,7 @@ function updateToggleIcon(toggleButton, isHidden) {
         toggleButton.innerHTML = '<i class="fas fa-bars"></i>';
         toggleButton.title = 'Show Sidebar';
     } else {
-        toggleButton.innerHTML = '<i class="fas fa-bars"></i>';
+        toggleButton.innerHTML = '<i class="fas fa-times"></i>';
         toggleButton.title = 'Hide Sidebar';
     }
 }

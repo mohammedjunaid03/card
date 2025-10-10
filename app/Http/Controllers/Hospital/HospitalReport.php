@@ -11,7 +11,15 @@ class HospitalReport extends Controller
 {
     public function index()
     {
-        $hospitalId = auth('hospital')->id();
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to view reports.');
+        }
+        
+        $hospitalId = $hospital->id;
         
         $totalAvailments = PatientAvailment::where('hospital_id', $hospitalId)->count();
         $totalDiscount = PatientAvailment::where('hospital_id', $hospitalId)->sum('discount_amount');
@@ -23,8 +31,8 @@ class HospitalReport extends Controller
             ->get();
 
         $monthlyStats = PatientAvailment::where('hospital_id', $hospitalId)
-            ->selectRaw('MONTH(availment_date) as month, COUNT(*) as count, SUM(discount_amount) as total_discount')
-            ->whereYear('availment_date', date('Y'))
+            ->selectRaw('strftime("%m", availment_date) as month, COUNT(*) as count, SUM(discount_amount) as total_discount')
+            ->whereRaw('strftime("%Y", availment_date) = ?', [date('Y')])
             ->groupBy('month')
             ->get();
 

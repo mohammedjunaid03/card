@@ -225,6 +225,7 @@
             
             strengthDiv.innerHTML = `<span class="${strengthClass}">${strengthText}</span>`;
         }
+        
     </script>
 </body>
 </html>

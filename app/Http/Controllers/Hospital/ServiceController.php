@@ -10,7 +10,15 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::where('hospital_id', auth('hospital')->id())
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to view services.');
+        }
+        
+        $services = Service::where('hospital_id', $hospital->id)
             ->latest()
             ->paginate(20);
 
@@ -24,6 +32,14 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to create services.');
+        }
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -36,7 +52,7 @@ class ServiceController extends Controller
             'description' => $request->description,
             'discount_percentage' => $request->discount_percentage,
             'price' => $request->price,
-            'hospital_id' => auth('hospital')->id(),
+            'hospital_id' => $hospital->id,
             'status' => 'active',
         ]);
 
@@ -46,7 +62,15 @@ class ServiceController extends Controller
 
     public function show($id)
     {
-        $service = Service::where('hospital_id', auth('hospital')->id())
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to view service details.');
+        }
+        
+        $service = Service::where('hospital_id', $hospital->id)
             ->findOrFail($id);
 
         return view('hospital.services.show', compact('service'));
@@ -54,7 +78,15 @@ class ServiceController extends Controller
 
     public function edit($id)
     {
-        $service = Service::where('hospital_id', auth('hospital')->id())
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to edit services.');
+        }
+        
+        $service = Service::where('hospital_id', $hospital->id)
             ->findOrFail($id);
 
         return view('hospital.services.edit', compact('service'));
@@ -62,6 +94,14 @@ class ServiceController extends Controller
 
     public function update(Request $request, $id)
     {
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to update services.');
+        }
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -69,7 +109,7 @@ class ServiceController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
 
-        $service = Service::where('hospital_id', auth('hospital')->id())
+        $service = Service::where('hospital_id', $hospital->id)
             ->findOrFail($id);
 
         $service->update($request->all());
@@ -80,7 +120,15 @@ class ServiceController extends Controller
 
     public function destroy($id)
     {
-        $service = Service::where('hospital_id', auth('hospital')->id())
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to delete services.');
+        }
+        
+        $service = Service::where('hospital_id', $hospital->id)
             ->findOrFail($id);
 
         $service->delete();
@@ -91,11 +139,19 @@ class ServiceController extends Controller
 
     public function updateDiscount(Request $request, $id)
     {
+        $hospital = auth('hospital')->user();
+        
+        // If no hospital is authenticated, redirect to login
+        if (!$hospital) {
+            return redirect()->route('hospital.login')
+                ->with('error', 'Please login to update discounts.');
+        }
+        
         $request->validate([
             'discount_percentage' => 'required|numeric|min:0|max:100',
         ]);
 
-        $service = Service::where('hospital_id', auth('hospital')->id())
+        $service = Service::where('hospital_id', $hospital->id)
             ->findOrFail($id);
 
         $service->update([

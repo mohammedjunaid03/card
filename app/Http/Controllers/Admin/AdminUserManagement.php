@@ -54,8 +54,8 @@ class AdminUserManagement extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'mobile' => 'required|string|unique:users',
+            'email' => 'required|email',
+            'mobile' => 'required|string',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female,other',
             'address' => 'required|string',
@@ -110,8 +110,8 @@ class AdminUserManagement extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'mobile' => 'required|string|unique:users,mobile,' . $id,
+            'email' => 'required|email',
+            'mobile' => 'required|string',
             'date_of_birth' => 'required|date',
             'gender' => 'required|in:male,female,other',
             'address' => 'required|string',

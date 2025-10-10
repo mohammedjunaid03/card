@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Guide - Hospital Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        .step { background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #007bff; }
+        .code { background: #e9ecef; padding: 10px; border-radius: 4px; font-family: monospace; }
+        .warning { background: #fff3cd; border-left-color: #ffc107; }
+        .success { background: #d4edda; border-left-color: #28a745; }
+        .error { background: #f8d7da; border-left-color: #dc3545; }
+        .screenshot { border: 2px solid #ddd; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Hospital Login Debug Guide</h1>
+    
+    <div class="step">
+        <h2>1. Check Browser Console for JavaScript Errors</h2>
+        <p><strong>Steps:</strong></p>
+        <ol>
+            <li>Open the hospital login page: <a href="/login?role=hospital" target="_blank">http://localhost:8000/login?role=hospital</a></li>
+            <li>Press <kbd>F12</kbd> or right-click → "Inspect" → "Console" tab</li>
+            <li>Look for any red error messages</li>
+            <li>Try to login and watch for new errors</li>
+        </ol>
+        
+        <div class="warning">
+            <strong>Common JavaScript Errors:</strong>
+            <ul>
+                <li>CSRF token errors</li>
+                <li>Form submission errors</li>
+                <li>Network request failures</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>2. Check Network Tab for POST Requests</h2>
+        <p><strong>Steps:</strong></p>
+        <ol>
+            <li>Open browser DevTools (F12)</li>
+            <li>Go to "Network" tab</li>
+            <li>Clear the network log (click the 🚫 icon)</li>
+            <li>Try to login</li>
+            <li>Look for a POST request to <code>/login</code></li>
+            <li>Click on the POST request to see details</li>
+        </ol>
+        
+        <div class="code">
+            <strong>What to look for:</strong><br>
+            • Status: 200 (success) or 302 (redirect)<br>
+            • Request payload should contain: user_type, login, password, _token<br>
+            • Response should be a redirect to /hospital/dashboard
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>3. Test the Debug Page</h2>
+        <p>I created a special test page to help debug the login:</p>
+        <p><a href="/test-hospital-login.html" target="_blank" class="btn">🧪 Open Test Page</a></p>
+        
+        <div class="success">
+            <strong>This test page will:</strong>
+            <ul>
+                <li>Show detailed login results</li>
+                <li>Display any errors</li>
+                <li>Show the response from the server</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>4. Check Laravel Logs</h2>
+        <p><strong>Method 1 - Command Line:</strong></p>
+        <div class="code">
+            # Open PowerShell/Command Prompt in your project directory<br>
+            Get-Content storage/logs/laravel.log -Tail 20
+        </div>
+        
+        <p><strong>Method 2 - Check Log File:</strong></p>
+        <div class="code">
+            # Navigate to: C:\Users\Dell\health-card-system\storage\logs\<br>
+            # Open laravel.log file in a text editor
+        </div>
+        
+        <div class="error">
+            <strong>Look for errors like:</strong>
+            <ul>
+                <li>Authentication failures</li>
+                <li>Database connection errors</li>
+                <li>Session errors</li>
+                <li>Route not found errors</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>5. Quick Test Commands</h2>
+        <p>Run these commands in your terminal to check the system:</p>
+        
+        <div class="code">
+            # Check if server is running<br>
+            php artisan serve --host=0.0.0.0 --port=8000<br><br>
+            
+            # Check routes<br>
+            php artisan route:list --name=hospital<br><br>
+            
+            # Clear caches<br>
+            php artisan route:clear<br>
+            php artisan config:clear<br>
+            php artisan cache:clear
+        </div>
+    </div>
+
+    <div class="step success">
+        <h2>✅ Hospital Login Credentials</h2>
+        <p><strong>Apollo Hospital:</strong></p>
+        <div class="code">
+            Email: apollo.hospital@gmail.com<br>
+            Mobile: 9876511111<br>
+            Password: apollo123
+        </div>
+        
+        <p><strong>Other Hospitals:</strong></p>
+        <div class="code">
+            Manipal: manipal.hospital@gmail.com / manipal123<br>
+            Fortis: fortis.hospital@gmail.com / fortis123
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>6. Common Issues & Solutions</h2>
+        
+        <div class="error">
+            <strong>Issue: "Invalid credentials"</strong><br>
+            Solution: Double-check email/password, ensure hospital status is 'active'
+        </div>
+        
+        <div class="error">
+            <strong>Issue: "CSRF token mismatch"</strong><br>
+            Solution: Clear browser cache, refresh the page
+        </div>
+        
+        <div class="error">
+            <strong>Issue: "Route not found"</strong><br>
+            Solution: Run <code>php artisan route:clear</code>
+        </div>
+        
+        <div class="error">
+            <strong>Issue: "Session store not set"</strong><br>
+            Solution: Check session configuration, ensure sessions table exists
+        </div>
+    </div>
+
+    <script>
+        // Add some debugging to this page
+        console.log('Debug guide loaded successfully');
+        console.log('Current URL:', window.location.href);
+        console.log('Server should be running on http://localhost:8000');
+    </script>
+</body>
+</html>

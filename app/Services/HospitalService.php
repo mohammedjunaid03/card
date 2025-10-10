@@ -13,7 +13,7 @@ class HospitalService
      */
     public function searchHospitals($filters = [])
     {
-        $query = Hospital::where('status', 'approved');
+        $query = Hospital::where('status', 'active');
 
         if (isset($filters['city'])) {
             $query->where('city', 'like', '%' . $filters['city'] . '%');

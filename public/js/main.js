@@ -96,14 +96,137 @@ $(document).ready(function() {
         });
     }
     
-    // Mobile menu toggle
-    $('.navbar-toggler').on('click', function() {
-        $('.navbar-collapse').toggleClass('show');
+    // Simple and reliable mobile navigation toggle
+    $(document).ready(function() {
+        console.log('Mobile navigation script loaded');
+        
+        // Remove any existing event listeners to prevent conflicts
+        $('.navbar-toggler').off('click');
+        $('.navbar-nav .nav-link').off('click');
+        $(document).off('click.mobileNav');
+        
+        // Check if elements exist
+        if ($('.navbar-toggler').length === 0) {
+            console.log('No navbar toggler found');
+            return;
+        }
+        
+        if ($('#navbarNav').length === 0) {
+            console.log('No navbar collapse found');
+            return;
+        }
+        
+        console.log('Mobile navigation elements found, setting up events');
+        
+        // Mobile menu toggle
+        $('.navbar-toggler').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Hamburger menu clicked');
+            
+            const $navbarCollapse = $('#navbarNav');
+            const $icon = $(this).find('i');
+            
+            // Toggle the show class
+            $navbarCollapse.toggleClass('show');
+            
+            console.log('Navbar show class toggled:', $navbarCollapse.hasClass('show'));
+            
+            // Update hamburger icon
+            if ($navbarCollapse.hasClass('show')) {
+                $icon.removeClass('fa-bars').addClass('fa-times');
+                console.log('Icon changed to X');
+            } else {
+                $icon.removeClass('fa-times').addClass('fa-bars');
+                console.log('Icon changed to hamburger');
+            }
+        });
+        
+        // Close mobile menu when clicking on a link
+        $('.navbar-nav .nav-link').on('click', function() {
+            console.log('Nav link clicked, closing menu');
+            $('#navbarNav').removeClass('show');
+            $('.navbar-toggler i').removeClass('fa-times').addClass('fa-bars');
+        });
+        
+        // Close mobile menu when clicking outside
+        $(document).on('click.mobileNav', function(e) {
+            if (!$(e.target).closest('.navbar').length) {
+                console.log('Clicked outside navbar, closing menu');
+                $('#navbarNav').removeClass('show');
+                $('.navbar-toggler i').removeClass('fa-times').addClass('fa-bars');
+            }
+        });
+        
+        // Prevent navbar collapse from closing when clicking inside it
+        $('#navbarNav').on('click', function(e) {
+            e.stopPropagation();
+        });
     });
     
-    // Close mobile menu when clicking on a link
-    $('.navbar-nav .nav-link').on('click', function() {
-        $('.navbar-collapse').removeClass('show');
+    // Dashboard Sidebar Toggle Functionality
+    $(document).ready(function() {
+        console.log('Dashboard sidebar toggle script loaded');
+        
+        // Check if we're on a dashboard page
+        if ($('#sidebarToggle').length === 0) {
+            console.log('No sidebar toggle button found - not on dashboard page');
+            return;
+        }
+        
+        if ($('#sidebar').length === 0) {
+            console.log('No sidebar found - not on dashboard page');
+            return;
+        }
+        
+        if ($('#content').length === 0) {
+            console.log('No content area found - not on dashboard page');
+            return;
+        }
+        
+        console.log('Dashboard elements found, setting up sidebar toggle');
+        
+        // Remove any existing event listeners
+        $('#sidebarToggle').off('click');
+        
+        // Sidebar toggle functionality
+        $('#sidebarToggle').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Dashboard sidebar toggle clicked');
+            
+            const $sidebar = $('#sidebar');
+            const $content = $('#content');
+            const $button = $(this);
+            
+            const isHidden = $sidebar.hasClass('hidden');
+            
+            if (isHidden) {
+                // Show sidebar
+                console.log('Showing dashboard sidebar');
+                $sidebar.removeClass('hidden');
+                $content.removeClass('full-width');
+                localStorage.setItem('sidebarHidden', 'false');
+            } else {
+                // Hide sidebar
+                console.log('Hiding dashboard sidebar');
+                $sidebar.addClass('hidden');
+                $content.addClass('full-width');
+                localStorage.setItem('sidebarHidden', 'true');
+            }
+        });
+        
+        // Check initial state from localStorage
+        const sidebarHidden = localStorage.getItem('sidebarHidden') === 'true';
+        if (sidebarHidden) {
+            $('#sidebar').addClass('hidden');
+            $('#content').addClass('full-width');
+            console.log('Dashboard sidebar initially hidden');
+        } else {
+            console.log('Dashboard sidebar initially visible');
+        }
     });
     
     // Back to top button

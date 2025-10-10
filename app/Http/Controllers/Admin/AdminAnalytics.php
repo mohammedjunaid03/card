@@ -27,20 +27,20 @@ class AdminAnalytics extends Controller
         $totalDiscountGiven = PatientAvailment::sum('discount_amount');
 
         // Monthly trends
-        $monthlyUsers = User::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+        $monthlyUsers = User::selectRaw('strftime("%Y-%m", created_at) as month, COUNT(*) as count')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
             ->orderBy('month')
             ->get();
 
-        $monthlyHospitals = Hospital::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+        $monthlyHospitals = Hospital::selectRaw('strftime("%Y-%m", created_at) as month, COUNT(*) as count')
             ->where('status', 'approved')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
             ->orderBy('month')
             ->get();
 
-        $monthlyAvailments = PatientAvailment::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count, SUM(discount_amount) as total_discount')
+        $monthlyAvailments = PatientAvailment::selectRaw('strftime("%Y-%m", created_at) as month, COUNT(*) as count, SUM(discount_amount) as total_discount')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
             ->orderBy('month')
