@@ -117,11 +117,11 @@ class CardGeneratorService
      */
     private function generateQRCode($cardNumber)
     {
-        $qrCodeFileName = 'qr_' . $cardNumber . '.png';
+        $qrCodeFileName = 'qr_' . $cardNumber . '.svg';
         $qrCodePath = 'qrcodes/' . $qrCodeFileName;
         
-        QrCode::format('png')
-              ->size(300)
+        QrCode::format('svg')
+              ->size(200)
               ->generate($cardNumber, storage_path('app/public/' . $qrCodePath));
         
         return $qrCodePath;

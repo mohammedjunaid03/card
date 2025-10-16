@@ -76,20 +76,16 @@ class AuthController extends Controller
             'status' => 'pending',
         ]);
 
-        // Generate OTP
-        $otp = rand(100000, 999999);
-        Otp::create([
-            'identifier' => $user->email,
-            'otp' => $otp,
-            'type' => 'registration',
-            'expires_at' => Carbon::now()->addMinutes(10),
+        // Skip OTP verification - directly activate user
+        $user->update([
+            'status' => 'active',
+            'email_verified' => true,
+            'mobile_verified' => true,
         ]);
-
-        // TODO: Send OTP via email/SMS
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Registration successful. Verify OTP to activate account.',
+            'message' => 'Registration successful! Account activated.',
             'user_id' => $user->id,
         ]);
     }

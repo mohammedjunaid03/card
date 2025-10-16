@@ -105,6 +105,7 @@ Route::post('/forgot-password/otp', [PasswordResetController::class, 'sendOtp'])
 Route::get('/verify-password-otp', [PasswordResetController::class, 'showVerifyOtpForm'])->name('password.verify-otp');
 Route::post('/verify-password-otp', [PasswordResetController::class, 'verifyOtp'])->name('password.verify-otp.submit');
 Route::post('/resend-otp', [PasswordResetController::class, 'resendOtp'])->name('password.resend-otp');
+
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 

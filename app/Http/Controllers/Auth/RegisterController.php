@@ -102,21 +102,24 @@ class RegisterController extends Controller
             'mobile_verified' => false,
         ]);
 
-        // Generate OTP
-        $otp = rand(100000, 999999);
-        Otp::create([
-            'identifier' => $user->email,
-            'otp' => $otp,
-            'type' => 'registration',
-            'expires_at' => Carbon::now()->addMinutes(10),
+        // Activate user directly (no payment required)
+        $user->update([
+            'status' => 'active',
+            'email_verified' => true,
+            'mobile_verified' => true,
         ]);
 
-        // TODO: Send OTP via email/SMS
-        // For now, we'll store it in session for testing
-        session(['registration_otp' => $otp, 'user_id' => $user->id]);
+        // Generate health card
+        $healthCard = $this->cardGeneratorService->generateCard($user);
 
-        return redirect('/verify-otp')
-            ->with('success', 'Registration successful. Please verify your email with the OTP sent to your email address.');
+        // Notify staff about pending approval
+        $this->notifyStaffForApproval($healthCard);
+
+        // Login user
+        Auth::login($user);
+
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Registration successful! Your health card has been generated and is pending staff approval.');
     }
 
     /**
